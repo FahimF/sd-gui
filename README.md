@@ -10,11 +10,11 @@ The GUI has the following functionality:
 
 * You can choose between generating via just a text prompt or a text + image prompt
 * Remembers the last settings (and prompt) you used the next time you run the script
-* Remembers your last 20 prompts and allows you to select an old prompt via the ßhistory list
+* Remembers your last 20 prompts and allows you to select an old prompt via the history list
 * Has the ability to switch between multiple schedulers to compare generated images
 * Can generate more than one image at a time and allows you to view all generated images in the GUI
 * Saves all generated images and the accompanying prompt info to hard drive
-* Allows you to delete any image and it's prompt info from the GUI itself
+* Allows you to delete any image and its prompt info from the GUI itself
 * Shows you the seed for any image so that you can use that seed to generate image variants
 
 ## Installation
