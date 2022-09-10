@@ -9,6 +9,7 @@ This repo is my work on getting Stable Diffusion working on Apple Silicon macs b
 The GUI has the following functionality:
 
 * You can choose between generating via just a text prompt or a text + image prompt
+* Remembers the last settings (and prompt) you used the next time you run the script
 * Remembers your last 20 prompts and allows you to select an old prompt via the ßhistory list
 * Has the ability to switch between multiple schedulers to compare generated images
 * Can generate more than one image at a time and allows you to view all generated images in the GUI
@@ -47,7 +48,6 @@ conda activate ml
 conda install pytorch torchvision torchaudio -c pytorch-nightly
 conda install transformers
 conda install -c conda-forge diffusers
-conda install fastcore
 conda install ftfy
 
 # Install git and git-lfs via Homebrew
@@ -59,6 +59,7 @@ cd sd-gui
 mkdir output
 
 # Clone the Hugging Face model repo - you will need the Hugging Face user and password for this step
+git lfs install
 git clone https://huggingface.co/CompVis/stable-diffusion-v1-4
 ```
 
@@ -73,6 +74,12 @@ python gui.py
 If you closed the terminal or want to use the UI at some other point, you'd have to navigate back to where you have this repo (`sd-gui`) before you run the above command.
 
 ### Installation Errors
+
+* If you get a Homebrew error like this: `homebrew-core is a shallow clone` then run the following command in terminal:
+
+  ```bash
+  git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
+  ```
 
 * I didn't need to install tkinter on my machine but if you do get an error about missing `_tkinter` install it via the terminal as follows:
 
@@ -102,6 +109,20 @@ If you closed the terminal or want to use the UI at some other point, you'd have
      ```
 
      The above should force your PyTorch to be updated to the latest nightly build.
+
+* If you install on an Intel Apple device and get the following error:
+
+  ```
+  ImportError: cannot import name 'EntryNotFoundError' from 'huggingface_hub.utils'
+  ```
+
+  Then you need to run the following command from terminal:
+
+  ```bash
+  pip install diffusers --force-install
+  ```
+
+  That should (theoretically) fix the issue.
 
 ## Known Issues
 
