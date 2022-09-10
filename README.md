@@ -9,7 +9,7 @@ This repo is my work on getting Stable Diffusion working on Apple Silicon macs b
 The GUI has the following functionality:
 
 * You can choose between generating via just a text prompt or a text + image prompt
-* Remembers your last 20 prompts and allows you to select an old prompt via history list
+* Remembers your last 20 prompts and allows you to select an old prompt via the ßhistory list
 * Has the ability to switch between multiple schedulers to compare generated images
 * Can generate more than one image at a time and allows you to view all generated images in the GUI
 * Saves all generated images and the accompanying prompt info to hard drive
@@ -70,3 +70,9 @@ python gui.py
 ```
 
 If you closed the terminal or want to use the UI at some other point, you'd have to navigate back to where you have this repo (`sd-gui`) before you run the above command.
+
+## Known Issues
+
+* You get an error message saying: "[indices should be either on cpu or on the same device as the indexed tensor (cpu)](https://github.com/huggingface/diffusers/issues/239)" Know issue that has been reported to Hugging Face. Read the issue comments to see [how it can be fixed](https://github.com/huggingface/diffusers/issues/239#issuecomment-1236092655) by modifying the diffusers source code ...
+* You get an error saying: "[Cannot convert a MPS Tensor to float64 dtype as the MPS framework doesn't support float64. Please use float32 instead](https://github.com/huggingface/diffusers/issues/358)" Known issue that has been reported to Hugging Face. Read the issue comments to see [how it can be fixed](https://github.com/huggingface/diffusers/issues/358#issue-1361673427) by modifying the diffusers source code ...
+* If you try to generate an image using both an image and a text prompt, you'll get a brown image as the result. This used to work previously but is broken in the diffusers 0.3.0 release. [Issue reported](https://github.com/huggingface/diffusers/issues/462).
