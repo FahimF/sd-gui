@@ -2,7 +2,7 @@
 
 This repo is my work on getting Stable Diffusion working on Apple Silicon macs by keeping things as simple as possible. The requirements are kept as simple as possible and probably the most complicated thing is the GUI which allows you to set up all your image generation parameters on a GUI whether you are on a Mac, Linux, or Windows.
 
-**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. I don't know if it will work on an Intel Mac or not and no testing has been done on any other platform but it should (theoretically) work on other platforms too.
+**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image! No testing has been done on any other platform (Windows and Linux) but it should (theoretically) work on other platforms too.
 
 ![gui](assets/gui.jpg)
 
@@ -21,7 +21,7 @@ The GUI has the following functionality:
 
 You will need the following:
 
-* An Apple Silicon mac (has not been tested on anything else)
+* An Apple Silicon or Intel mac (has not been tested on anything else)
 * macOS 12.3 Monterey or later
 * Python
 
