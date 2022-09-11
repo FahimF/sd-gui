@@ -125,7 +125,7 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   Then you need to run the following command from terminal:
 
   ```bash
-  pip install diffusers --force-install
+  pip install diffusers --force-reinstall
   ```
 
   That should re-install diffusers and fix the issue.
