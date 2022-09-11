@@ -4,3 +4,13 @@ output
 stable-diffusion-v1-4
 /.ipynb_checkpoints/
 /__pycache__/
+gen.py
+img.py
+img2img.py
+realesrgan-ncnn-vulkan
+simple.py
+simple2.py
+simple3.py
+stable_diffusion_seeds.ipynb
+test.py
+test2.py

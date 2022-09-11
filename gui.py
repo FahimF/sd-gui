@@ -13,6 +13,18 @@ from PIL import Image, ImageTk
 from datetime import datetime
 
 # Action methods
+def resized(event):
+	global  m_right, m_image, g_file_pointer
+
+	# A widget was resized
+	if event.widget == m_right:
+		# Update the canvas width
+		wd = event.width - 24
+		m_image.config(width=wd)
+		# Redisplay the current image if there is one
+		if g_file_pointer > -1:
+			show_image()
+
 def type_changed(event):
 	global cfg
 
@@ -64,18 +76,20 @@ def toggle_image(show):
 		m_actions.grid_forget()
 
 def show_image():
-	global cfg, g_img_seed, g_seeds, g_count
+	global cfg, g_img_seed, g_seeds, g_count, m_image
 
 	# Image
 	path = g_files[g_file_pointer]
 	pi = Image.open(path)
-	ratio = min(512 / cfg.width, 512 / cfg.height)
+	iw = int(m_image['width'])
+	ih = int(m_image['height'])
+	ratio = min(iw / cfg.width, ih / cfg.height)
 	wd = int(cfg.width * ratio)
 	ht = int(cfg.height * ratio)
 	pi = pi.resize(size=(wd, ht), resample=Image.Resampling.LANCZOS)
 	root.img = img = ImageTk.PhotoImage(pi)
-	x = (512 - wd) / 2
-	y = (512 - ht) / 2
+	x = (iw - wd) / 2
+	y = (ih - ht) / 2
 	m_image.create_image((x, y), image=img, anchor='nw')
 	# Image count
 	g_count.set(f'Number of images: {len(g_files)}')
@@ -195,6 +209,9 @@ def generate_images():
 	elif cfg.scheduler == 'DDIM':
 		# beta_schedule can be linear, scaled_linear, or squaredcos_cap_v2
 		sched = DDIMScheduler(beta_start=0.0009, beta_end=0.0120, beta_schedule="scaled_linear", clip_sample=False)
+	# elif cfg.scheduler == 'DDPM':
+	# 	# beta_schedule can be linear, scaled_linear, or squaredcos_cap_v2
+	# 	sched = DDPMScheduler(num_train_timesteps=10, beta_start=0.0001, beta_end=0.02, beta_schedule="linear", clip_sample=False)
 	# Set scheduler values
 	if sched is not None:
 		sched.num_inference_steps = cfg.num_inference_steps
@@ -331,7 +348,7 @@ m_prompts.grid(row=4, column=0, columnspan=2, padx=(16, 16), pady=(2, 4), sticky
 m_prompts.bind('<<ComboboxSelected>>', prompts_changed)
 # Left frame
 m_left = Frame(root)
-m_left.grid(row=5, column=0, sticky=N)
+m_left.grid(row=5, column=0, sticky=NS)
 # Right frame
 m_right = Frame(root)
 m_right.grid(row=5, column=1, sticky=NSEW)
@@ -409,7 +426,7 @@ m_image = Canvas(m_right, width=512, height=512, bg='lightgrey')
 m_image.grid(row=0, column=0, padx=(8, 16), pady=(4, 4))
 # Info frame
 m_info = Frame(m_right)
-m_info.grid(row=1, column=0)
+m_info.grid(row=1, column=0, sticky=EW)
 # Seed label
 Label(m_info, text='Seed').grid(row=0, column=0, padx=(0, 8), pady=(4, 2), sticky=W)
 # Seed entry
@@ -423,10 +440,10 @@ m_nsfw.grid(row=0, column=3, padx=(0, 8), pady=(4, 2), sticky=W)
 m_info.grid_forget()
 # Image count label
 m_count = Label(m_right, textvariable=g_count)
-m_count.grid(row=2, column=0, padx=(8, 8), pady=(4, 2))
+m_count.grid(row=2, column=0, padx=(8, 8), pady=(4, 2), sticky=EW)
 # Actions Frame
 m_actions = Frame(m_right)
-m_actions.grid(row=3, column=0, pady=(16, 0))
+m_actions.grid(row=3, column=0, pady=(16, 0), sticky=EW)
 # Previous button
 m_prev = Button(m_actions, text="Previous", command=previous_image)
 m_prev.grid(row=0, column=0, padx=(0, 24))
@@ -442,5 +459,8 @@ ttk.Separator(root, orient='horizontal').grid(row=6, column=0, columnspan=2, pad
 # Generate button
 m_generate = Button(root, text="Generate!", command=generate_images)
 m_generate.grid(row=7, column=0, columnspan=2)
+# Resize handling
+m_right.update_idletasks()
+m_right.bind("<Configure>", resized)
 # Start GUI loop
 root.mainloop()
