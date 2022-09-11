@@ -42,6 +42,7 @@ There is some limited information which might help you in this blog post, but th
 
 # Install miniconda to manage your Python environments
 /bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)"
+# If the above line does not work to install miniconda correctly (some have reported issues) try the instructions at this link instead: https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html
 
 # Create and activate new conda environment named ml
 conda create -n ml python=3.8
