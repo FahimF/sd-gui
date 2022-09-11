@@ -58,7 +58,7 @@ conda install ftfy
 brew install git git-lfs
 
 # Clone this repo and create output folder
-git clone git@github.com:FahimF/sd-gui.git
+git clone https://github.com/FahimF/sd-gui.git
 cd sd-gui
 mkdir output
 
