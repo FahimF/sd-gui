@@ -72,7 +72,7 @@ def show_image():
 	ratio = min(512 / cfg.width, 512 / cfg.height)
 	wd = int(cfg.width * ratio)
 	ht = int(cfg.height * ratio)
-	pi = pi.resize(size=(wd, ht), resample=Image.LANCZOS)
+	pi = pi.resize(size=(wd, ht), resample=Image.Resampling.LANCZOS)
 	root.img = img = ImageTk.PhotoImage(pi)
 	x = (512 - wd) / 2
 	y = (512 - ht) / 2
@@ -192,6 +192,9 @@ def generate_images():
 	elif cfg.scheduler == 'PNDM':
 		# beta_schedule can be linear, scaled_linear, or squaredcos_cap_v2
 		sched = PNDMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="linear")
+	elif cfg.scheduler == 'DDIM':
+		# beta_schedule can be linear, scaled_linear, or squaredcos_cap_v2
+		sched = DDIMScheduler(beta_start=0.0009, beta_end=0.0120, beta_schedule="scaled_linear", clip_sample=False)
 	# Set scheduler values
 	if sched is not None:
 		sched.num_inference_steps = cfg.num_inference_steps
@@ -286,6 +289,7 @@ ht = 860
 x = int((root.winfo_screenwidth() - wd) / 2)
 y = int((root.winfo_screenheight() - ht) / 2)
 root.geometry(f'{wd}x{ht}+{x}+{y}')
+Grid.columnconfigure(root, 1, weight=1)
 
 # Config variables
 g_lbl_font = font.Font(root, weight=font.BOLD)
@@ -319,18 +323,18 @@ m_type.bind('<<ComboboxSelected>>', type_changed)
 Label(root, text='Prompt', font=g_lbl_font).grid(row=2, column=0, padx=(16, 8), pady=(4, 2), sticky=W)
 # Prompt text field
 m_prompt = Text(root, width=125, height=4, wrap=WORD)
-m_prompt.grid(row=3, column=0, columnspan=2, padx=16, pady=(2, 4), sticky=W)
+m_prompt.grid(row=3, column=0, columnspan=2, padx=16, pady=(2, 4), sticky=EW)
 m_prompt.insert('1.0', cfg.prompt)
 # Previous prompts picker
 m_prompts = ttk.Combobox(root, state="readonly", textvariable=g_prompt, values=cfg.prompts)
-m_prompts.grid(row=4, column=0, columnspan=2, padx=(16, 8), pady=(2, 4), sticky=EW)
+m_prompts.grid(row=4, column=0, columnspan=2, padx=(16, 16), pady=(2, 4), sticky=EW)
 m_prompts.bind('<<ComboboxSelected>>', prompts_changed)
 # Left frame
 m_left = Frame(root)
 m_left.grid(row=5, column=0, sticky=N)
 # Right frame
 m_right = Frame(root)
-m_right.grid(row=5, column=1, sticky='N')
+m_right.grid(row=5, column=1, sticky=NSEW)
 # Left - Input image label
 m_lbl_input = Label(m_left, text='Input Image', font=g_lbl_font)
 m_lbl_input.grid(row=0, column=0, padx=(16, 8), pady=(4, 2), sticky=W)
@@ -347,7 +351,7 @@ m_btn_input.grid_forget()
 Label(m_left, text='Scheduler', font=g_lbl_font).grid(row=2, column=0, columnspan=2, padx=(16, 8), pady=(4, 2),
 	sticky=W)
 # Scheduler combo
-m_sched = ttk.Combobox(m_left, state="readonly", textvariable=g_scheduler, values=['Default', 'LMS', 'PNDM'])
+m_sched = ttk.Combobox(m_left, state="readonly", textvariable=g_scheduler, values=['Default', 'LMS', 'PNDM', 'DDIM'])
 m_sched.grid(row=3, column=0, columnspan=2, padx=(16, 8), pady=(2, 4), sticky=W)
 # Width and height section
 m_size = Frame(m_left)
@@ -402,7 +406,7 @@ m_seed = Entry(m_left, textvariable=g_seed, width=30)
 m_seed.grid(row=14, column=0, padx=(16, 4), pady=(2, 4), sticky=W)
 # Right - Output image
 m_image = Canvas(m_right, width=512, height=512, bg='lightgrey')
-m_image.grid(row=0, column=0, padx=(8, 16), pady=(4, 4), sticky=E)
+m_image.grid(row=0, column=0, padx=(8, 16), pady=(4, 4))
 # Info frame
 m_info = Frame(m_right)
 m_info.grid(row=1, column=0)
