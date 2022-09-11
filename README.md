@@ -9,6 +9,7 @@ This repo is my work on getting Stable Diffusion working on Apple Silicon macs b
 The GUI has the following functionality:
 
 * You can choose between generating via just a text prompt or a text + image prompt
+* You can specify the size of the image that you want to generate
 * Remembers the last settings (and prompt) you used the next time you run the script
 * Remembers your last 20 prompts and allows you to select an old prompt via the history list
 * Has the ability to switch between multiple schedulers to compare generated images
@@ -25,7 +26,9 @@ You will need the following:
 * macOS 12.3 Monterey or later
 * Python
 
-Before you start your installation, you might also want to sign up at [Hugging Face](https://huggingface.co/) since you'll need a Hugging Face user account in order to download the Stable Diffusion models.
+Before you start your installation, you might also want to sign up at [Hugging Face](https://huggingface.co/) since you'll need a Hugging Face user account in order to download the Stable Diffusion models. Do note also that you would need to visit the [Hugging Face Stable Diffusion model page](https://huggingface.co/CompVis/stable-diffusion-v1-4) and accept their license before you would be able to download the model — you'll need to download the model during the installation.
+
+There's also an [Installation Errors](#installation-errors) section further down. Please refer to that if you run into issues since common issues that others have faced are documented there 🙂
 
 To get set up, you'll need to run the following commands in terminal one at a time. Do note that some of these commands would require you to make decisions and respond to prompts. If you are not comforable with that, this process might not be for you 🙂
 
@@ -81,6 +84,8 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
   ```
 
+* During the conda install it should prompt you to update your system settings to add the conda installation path to your system path. If you didn't do this, then you would have to manually update your .zshrc or .bashrc to add conda to your path. [This StackOverflow question](https://stackoverflow.com/questions/60896426/adding-conda-to-the-path-on-macos-catalina) might help. If not, please Google and let me know if you find a good link 🙂
+
 * I didn't need to install tkinter on my machine but if you do get an error about missing `_tkinter` install it via the terminal as follows:
 
   ```bash
@@ -110,7 +115,7 @@ If you closed the terminal or want to use the UI at some other point, you'd have
 
      The above should force your PyTorch to be updated to the latest nightly build.
 
-* If you install on an Intel Apple device and get the following error:
+* If you get the following error:
 
   ```
   ImportError: cannot import name 'EntryNotFoundError' from 'huggingface_hub.utils'
@@ -122,7 +127,7 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   pip install diffusers --force-install
   ```
 
-  That should (theoretically) fix the issue.
+  That should re-install diffusers and fix the issue.
 
 ## Known Issues
 
