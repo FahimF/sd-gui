@@ -45,7 +45,7 @@ There is some limited information which might help you in this blog post, but th
 # If the above line does not work to install miniconda correctly (some have reported issues) try the instructions at this link instead: https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html
 
 # Create and activate new conda environment named ml
-conda create -n ml python=3.8
+conda create -n ml python=3.8.8
 conda activate ml
 
 # Install the needed Python packages
@@ -86,6 +86,16 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   ```
 
 * During the conda install it should prompt you to update your system settings to add the conda installation path to your system path. If you didn't do this, then you would have to manually update your .zshrc or .bashrc to add conda to your path. [This StackOverflow question](https://stackoverflow.com/questions/60896426/adding-conda-to-the-path-on-macos-catalina) might help. If not, please Google and let me know if you find a good link 🙂
+
+* If installing the Python packages fails due to conflicting dependencies, use the following commands to create an environment with a known set of package versions. (Since the PyTorch nigthly builds will have fixes for Apple Silicon, if you are on Apple Silicon, the recommended method would be to install the latest night. But if that fails, this should work...) But do this only after you've cloned this repo and have changed your folder into the repo folder.
+
+  ```bash
+  conda activate base
+  conda env remove -n ml
+  conda env create -f environment.yaml
+  ```
+
+  
 
 * I didn't need to install tkinter on my machine but if you do get an error about missing `_tkinter` install it via the terminal as follows:
 
@@ -128,7 +138,7 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   pip install diffusers --force-reinstall
   ```
 
-  That should re-install diffusers and fix the issue.
+  That should re-install diffusers and fix the issue. 
 
 ## Known Issues
 
