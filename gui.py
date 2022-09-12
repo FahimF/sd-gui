@@ -239,10 +239,12 @@ def generate_images():
 		start = time.time()
 		# Get a new random seed, store it and use it as the generator state
 		if cfg.seed == -1:
-			cfg.seed = generator.seed()
-		print(f'Seed for new image: {cfg.seed}')
+			seed = generator.seed()
+		else:
+			seed = cfg.seed
+		print(f'Seed for new image: {seed}')
 		# Update generator with seed
-		generator = generator.manual_seed(cfg.seed)
+		generator = generator.manual_seed(seed)
 		g_seeds.append(cfg.seed)
 		latent = torch.randn((1, pipe.unet.in_channels, cfg.height // 8, cfg.width // 8),
 			generator=generator, device=device)
@@ -282,7 +284,7 @@ def generate_images():
 		h.write(f"guidance_scale = {cfg.guidance_scale}\n")
 		h.write(f"Is NSFW? = {is_nsfw}\n")
 		h.write(f"Time taken = {tm}s\n")
-		h.write(f'Seed = {cfg.seed}\n')
+		h.write(f'Seed = {seed}\n')
 		h.close()
 		# Console output
 		print(f"Time taken: {tm}s")
