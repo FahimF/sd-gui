@@ -245,7 +245,7 @@ def generate_images():
 		print(f'Seed for new image: {seed}')
 		# Update generator with seed
 		generator = generator.manual_seed(seed)
-		g_seeds.append(cfg.seed)
+		g_seeds.append(seed)
 		latent = torch.randn((1, pipe.unet.in_channels, cfg.height // 8, cfg.width // 8),
 			generator=generator, device=device)
 		if cfg.type == 'Text + Image Prompt':
