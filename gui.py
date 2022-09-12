@@ -22,7 +22,7 @@ def resized(event):
 		wd = event.width - 24
 		m_image.config(width=wd)
 		# Redisplay the current image if there is one
-		if g_file_pointer > -1:
+		if len(g_files) > 0:
 			show_image()
 
 def type_changed(event):
@@ -128,6 +128,7 @@ def delete_image():
 		print(f"Deleted prompt: {pf}")
 	# If there are no more images, hide image part
 	if len(g_files) == 0:
+		g_file_pointer = -1
 		toggle_image(False)
 		g_count.set(f'Number of images: 0')
 		return
