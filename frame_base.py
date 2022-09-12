@@ -175,7 +175,7 @@ class BaseFrame(tk.Frame):
 			# Generate an image using engine
 			image, is_nsfw, seed = sd.generate()
 			self.nsfw.append(is_nsfw)
-			self.seeds.append(self.cfg.seed)
+			self.seeds.append(seed)
 			end = time.time()
 			tm = end - start
 			if is_nsfw:
