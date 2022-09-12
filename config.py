@@ -1,8 +1,9 @@
 import json
 from os.path import exists
+from sd_engine import GeneratorType
 
 class Config:
-	type = 'Text Prompt'
+	type = GeneratorType.txt2img
 	scheduler = 'Default'
 	prompt = 'highly-detailed disc world with a single big mountain in the middle and water pouring down over its edges, the lights of one city with short buildings visible on the world, the world is sitting on the back of a giant turtle swimming through space which has four elephants on its back holding up the world, dark sky full of stars. Massive scale, Highly detailed, Artstation, Cinematic, Colorful'
 	prompts = ['highly-detailed disc world with a single big mountain in the middle and water pouring down over its edges, the lights of one city with short buildings visible on the world, the world is sitting on the back of a giant turtle swimming through space which has four elephants on its back holding up the world, dark sky full of stars. Massive scale, Highly detailed, Artstation, Cinematic, Colorful']
@@ -23,7 +24,8 @@ class Config:
 			with open('config.json') as file:
 				data = json.load(file)
 				# print(f'Loaded config data: {data}')
-				self.type = data['type']
+				type = data['type']
+				self.type = GeneratorType.txt2img if type == 'Text Prompt' else GeneratorType.img2img
 				self.scheduler = data['scheduler']
 				self.prompt = data['prompt']
 				self.prompts = data['prompts']
@@ -47,7 +49,8 @@ class Config:
 		self.prompts.insert(1, prompt)
 
 	def save(self):
-		data = {'type': self.type, 'scheduler': self.scheduler, 'prompt': self.prompt, 'prompts': self.prompts,
+		type = 'Text Prompt' if self.type == GeneratorType.txt2img else 'Text + Image'
+		data = {'type': type, 'scheduler': self.scheduler, 'prompt': self.prompt, 'prompts': self.prompts,
 				'input_image': self.input_image, 'noise_strength': self.noise_strength,
 				'num_inference_steps': self.num_inference_steps, 'guidance_scale': self.guidance_scale,
 				'num_copies': self.num_copies, 'seed': self.seed, 'width': self.width, 'height': self.height}
@@ -55,3 +58,16 @@ class Config:
 		with open('config.json', 'w') as file:
 			file.write(str)
 			file.close()
+
+	def display(self):
+		print(
+			f'Type: {self.type}\n'
+			f'Scheduler: {self.scheduler}\n'
+			f'Prompt: {self.prompt}\n'
+			f'Width: {self.width}\n'
+			f'Height: {self.height}\n'
+			f'Strength: {self.noise_strength}\n'
+			f'Num Stpes: {self.num_inference_steps}\n'
+			f'Guidance: {self.guidance_scale}\n'
+			f'Copies: {self.num_copies}\n'
+			f'Seed: {self.seed}')
