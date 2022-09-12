@@ -63,10 +63,12 @@ class SDEngine:
 	def generate(self):
 		# Get a new random seed, store it and use it as the generator state
 		if self.cfg.seed == -1:
-			self.cfg.seed = self.generator.seed()
-		print(f'Seed for new image: {self.cfg.seed}')
+			seed = self.generator.seed()
+		else:
+			seed = self.cfg.seed
+		print(f'Seed for new image: {seed}')
 		# Update generator with seed
-		generator = self.generator.manual_seed(self.cfg.seed)
+		generator = self.generator.manual_seed(seed)
 		latent = torch.randn((1, self.pipe.unet.in_channels, self.cfg.height // 8, self.cfg.width // 8),
 			generator=generator, device=self.device)
 		if self.cfg.type == GeneratorType.img2img:
