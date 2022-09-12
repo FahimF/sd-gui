@@ -135,7 +135,6 @@ class BaseFrame(tk.Frame):
 
 	def generate_images(self):
 		# Get current values
-		self.cfg.type = GeneratorType.txt2img
 		self.cfg.prompt = self.m_prompt.get('1.0', tk.END).strip()
 		# Add new prompt to the prompts array - deduping and other logic in method
 		self.cfg.add_prompt(self.cfg.prompt)
@@ -156,7 +155,7 @@ class BaseFrame(tk.Frame):
 		self.cfg.save()
 		self.cfg.display()
 		# Validations - must have image if IMG2IMG
-		if self.cfg.type == GeneratorType.img2img:
+		if self.type == GeneratorType.img2img:
 			# Is there an image specified?
 			if len(self.cfg.input_image) == 0 or not os.path.exists(self.cfg.input_image):
 				tk.messagebox.showwarning(title='Error',
@@ -169,7 +168,7 @@ class BaseFrame(tk.Frame):
 		self.seeds.clear()
 		self.nsfw.clear()
 		self.file_pointer = 0
-		sd = SDEngine(self.cfg)
+		sd = SDEngine(self.cfg, self.type)
 		for i in range(self.cfg.num_copies):
 			start = time.time()
 			# Generate an image using engine
@@ -190,12 +189,12 @@ class BaseFrame(tk.Frame):
 			# Save prompt
 			tn = f"output/sample_{dt}.txt"
 			h = open(tn, "w")
-			h.write(f"Engine: {self.cfg.type}\n")
+			h.write(f"Engine: {self.type}\n")
 			h.write(f"Scheduler: {self.cfg.scheduler}\n")
 			h.write(f"prompt={self.cfg.prompt}\n")
 			h.write(f"width={self.cfg.width}\n")
 			h.write(f"height={self.cfg.height}\n")
-			if self.cfg.type == GeneratorType.img2img:
+			if self.type == GeneratorType.img2img:
 				h.write(f"image={self.cfg.input_image}\n")
 				h.write(f"strength = {self.cfg.noise_strength}\n")
 			h.write(f"num_inference_steps = {self.cfg.num_inference_steps}\n")

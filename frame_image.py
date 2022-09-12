@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from frame_base import BaseFrame
+from sd_engine import GeneratorType
 
 class ImageFrame(BaseFrame):
 	def __init__(self, parent, cfg, *args, **kwargs):
@@ -21,6 +22,7 @@ class ImageFrame(BaseFrame):
 		self.img_seed = tk.StringVar(self, cfg.seed)
 		self.count = tk.StringVar(self, 'Number of images: 0')
 		# Other values
+		self.type = GeneratorType.img2img
 		self.files = []
 		self.seeds = []
 		self.nsfw = []

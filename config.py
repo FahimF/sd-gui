@@ -42,11 +42,8 @@ class Config:
 	def add_prompt(self, prompt):
 		if prompt in self.prompts:
 			return
-		# Only 20 prompts are saved in app
-		if len(self.prompts) >= 20:
-			self.prompts.pop()
-		# The first item is never overwritten
-		self.prompts.insert(1, prompt)
+		# Insert new prompt at top of list
+		self.prompts.insert(0, prompt)
 
 	def save(self):
 		type = 'Text Prompt' if self.type == GeneratorType.txt2img else 'Text + Image'

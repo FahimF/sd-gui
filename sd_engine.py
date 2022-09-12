@@ -16,8 +16,9 @@ class SchedulerType(Enum):
 	DDIM = 4
 
 class SDEngine:
-	def __init__(self, cfg):
+	def __init__(self, cfg, type):
 		self.cfg = cfg
+		self.type = type
 		self.generator = torch.Generator(device='cpu')
 		# Device definition
 		self.device = torch.device(
@@ -40,7 +41,7 @@ class SDEngine:
 		if sched is not None:
 			sched.num_inference_steps = self.cfg.num_inference_steps
 		# Set up pipeline based on type
-		if self.cfg.type == GeneratorType.txt2img:
+		if self.type == GeneratorType.txt2img:
 			if sched is None:
 				self.pipe = StableDiffusionPipeline.from_pretrained("stable-diffusion-v1-4").to(self.device)
 			else:
@@ -54,7 +55,7 @@ class SDEngine:
 		# Disable NSFW checks - stops giving you black images
 		self.pipe.safety_checker = lambda images, **kwargs: (images, False)
 		# Load and prepare image if type is img2img
-		if self.cfg.type == GeneratorType.img2img:
+		if self.type == GeneratorType.img2img:
 			image = Image.open(self.cfg.input_image).convert("RGB")
 			wd, ht = image.size
 			if wd != self.cfg.width or ht != self.cfg.height:
@@ -71,7 +72,7 @@ class SDEngine:
 		generator = self.generator.manual_seed(seed)
 		latent = torch.randn((1, self.pipe.unet.in_channels, self.cfg.height // 8, self.cfg.width // 8),
 			generator=generator, device=self.device)
-		if self.cfg.type == GeneratorType.img2img:
+		if self.type == GeneratorType.img2img:
 			result = self.pipe(prompt=self.cfg.prompt, init_image=self.input_image, strength=self.cfg.noise_strength,
 				num_inference_steps=self.cfg.num_inference_steps, guidance_scale=self.cfg.guidance_scale,
 				generator=generator)
