@@ -97,15 +97,13 @@ If you closed the terminal or want to use the UI at some other point, you'd have
   conda env create -f environment.yaml
   ```
 
-  
-
 * I didn't need to install tkinter on my machine but if you do get an error about missing `_tkinter` install it via the terminal as follows:
 
   ```bash
   brew install python-tk
   ```
 
-*  If you get the following error:
+* If you get the following error:
 
   ```
   The operator 'aten::index.Tensor' is not current implemented for the MPS device. If you want this op to be added in priority during the prototype phase of this feature, please comment on https://github.com/pytorch/pytorch/issues/77764. As a temporary fix, you can set the environment variable `PYTORCH_ENABLE_MPS_FALLBACK=1` to use the CPU as a fallback for this op. WARNING: this will be slower than running natively on MPS.
@@ -128,19 +126,25 @@ If you closed the terminal or want to use the UI at some other point, you'd have
 
      The above should force your PyTorch to be updated to the latest nightly build.
 
-* If you get the following error:
+* If you get either of the following errors:
 
   ```
   ImportError: cannot import name 'EntryNotFoundError' from 'huggingface_hub.utils'
   ```
 
-  Then you need to run the following command from terminal:
+  Or:
 
-  ```bash
-  pip install diffusers --force-reinstall
+  ```
+  ImportError: cannot import name 'StableDiffusionImg2ImgPipeline' from 'diffusers.pipelines'
   ```
 
-  That should re-install diffusers and fix the issue. 
+  Then try running the following command from terminal:
+
+  ```bash
+  pip install diffusers --force-reinstall --no-cache-dir
+  ```
+
+  That should re-install diffusers and fix the issue.
 
 ## Known Issues
 
