@@ -17,6 +17,7 @@ class Prompt:
 				is_insert = True
 			else:
 				sql = f'UPDATE "prompts" SET "prompt" = "{self.prompt}" WHERE "id" = {self.id};'
+			# print(f'Prompt SQL: {sql}')
 			cur = self.db.execute(sql)
 			self.db.commit()
 			if is_insert and cur.lastrowid is not None:

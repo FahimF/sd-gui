@@ -6,6 +6,8 @@ from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 from sd_engine import SDEngine, GeneratorType
 from datetime import datetime
+from data.batch import Batch
+from data.image import Image as DImg
 
 class BaseFrame(tk.Frame):
 	def __init__(self, parent, cfg, *args, **kwargs):
@@ -135,32 +137,39 @@ class BaseFrame(tk.Frame):
 			self.m_actions.grid_forget()
 
 	def generate_images(self):
-		# Get current values
+		# Get current prompt
 		prompt = self.m_prompt.get('1.0', tk.END).strip()
-		# Add new prompt to the prompts array - deduping and other logic in method
+		# Add new prompt to the prompts array - deduping and other logic is in method
 		self.cfg.add_prompt(prompt)
-		self.cfg.input_image = self.init_image.get()
-		self.cfg.scheduler = self.scheduler.get()
-		self.cfg.width = self.width.get()
+		# Create new batch record and save it
+		batch = Batch(self.cfg.db)
+		batch.prompt_id = self.cfg.prompt.id
+		# Get batch settings
+		batch.input_image = self.cfg.input_image = self.init_image.get()
+		batch.scheduler = self.cfg.scheduler = self.scheduler.get()
+		batch.width = self.cfg.width = self.width.get()
 		if self.cfg.width % 8 != 0:
 			self.cfg.width = self.cfg.width - (self.cfg.width % 8)
-		self.cfg.height = self.height.get()
+			batch.width = self.cfg.width
+		batch.height = self.cfg.height = self.height.get()
 		if self.cfg.height % 8 != 0:
 			self.cfg.height = self.cfg.height - (self.cfg.height % 8)
-		self.cfg.noise_strength = self.strength.get()
-		self.cfg.num_inference_steps = self.num_inference_steps.get()
-		self.cfg.guidance_scale = self.guidance_scale.get()
-		self.cfg.num_copies = self.num_copies.get()
-		self.cfg.seed = self.seed.get()
+			batch.height = self.cfg.height
+		batch.noise_strength = self.cfg.noise_strength = self.strength.get()
+		batch.inference_steps = self.cfg.num_inference_steps = self.num_inference_steps.get()
+		batch.guidance_scale = self.cfg.guidance_scale = self.guidance_scale.get()
+		batch.num_copies = self.cfg.num_copies = self.num_copies.get()
+		batch.seed = self.cfg.seed = self.seed.get()
 		# Save current configuration before image generation
 		self.cfg.save()
 		self.cfg.display()
+		batch.save()
 		# Validations - must have image if IMG2IMG
 		if self.type == GeneratorType.img2img:
 			# Is there an image specified?
 			if len(self.cfg.input_image) == 0 or not os.path.exists(self.cfg.input_image):
 				messagebox.showwarning(title='Error',
-											   message='You need to select a valid Input Image if you want to use an image input.')
+					message='You need to select a valid Input Image if you want to use an image input.')
 				return
 		# TODO - If there's a non-random seed value but number of copies is not 1, should we warn/exit?
 		# We are good to go - set up for process
@@ -170,6 +179,7 @@ class BaseFrame(tk.Frame):
 		self.nsfw.clear()
 		self.file_pointer = 0
 		sd = SDEngine(self.cfg, self.type)
+		total = 0.0
 		for i in range(self.cfg.num_copies):
 			start = time.time()
 			# Generate an image using engine
@@ -178,6 +188,7 @@ class BaseFrame(tk.Frame):
 			self.seeds.append(seed)
 			end = time.time()
 			tm = end - start
+			total += tm
 			if is_nsfw:
 				print("NSFW image detected!")
 			else:
@@ -187,7 +198,15 @@ class BaseFrame(tk.Frame):
 				image.save(fn)
 				self.files.append(fn)
 				print(f"Saved image to: {fn}")
-			# Save prompt
+			# Save Image info
+			di = DImg(self.cfg.db)
+			di.batch_id = batch.id
+			di.path = fn
+			di.seed = seed
+			di.nsfw = is_nsfw
+			di.time_taken = tm
+			di.save()
+			# Save prompt data
 			tn = f"output/sample_{dt}.txt"
 			h = open(tn, "w")
 			h.write(f"Engine: {self.type}\n")
@@ -208,6 +227,9 @@ class BaseFrame(tk.Frame):
 			print(f"Time taken: {tm}s")
 		# Done with copy loop
 		print(f"Generated {self.num_copies.get()} images")
+		# Save final batch info
+		batch.time_taken = total
+		batch.save()
 		# Show first image result and update UI
 		self.m_generate['state'] = tk.NORMAL
 		self.toggle_image(True)

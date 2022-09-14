@@ -101,7 +101,7 @@ class Config:
 		print(
 			f'Type: {self.type}\n'
 			f'Scheduler: {self.scheduler}\n'
-			f'Prompt: {self.prompt}\n'
+			f'Prompt: {self.prompt.prompt}\n'
 			f'Width: {self.width}\n'
 			f'Height: {self.height}\n'
 			f'Strength: {self.noise_strength}\n'
@@ -140,11 +140,12 @@ class Config:
 			sql = f'CREATE TABLE IF NOT EXISTS "batches" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, ' \
 				  f'"prompt_id" INTEGER NOT NULL, "scheduler" TEXT NOT NULL, "width" INTEGER NOT NULL, "height" INTEGER NOT NULL, ' \
 				  f'"inference_steps" INTEGER NOT NULL, "guidance_scale" REAL NOT NULL, "num_copies" INTEGER NOT NULL, ' \
-				  f'"time_taken" FLOAT NOT NULL DEFAULT 0.0, "seed" INTEGER NOT NULL DEFAULT -1, "noise_strength" REAL NOT NULL DEFAULT 0.0);'
+				  f'"time_taken" REAL NOT NULL DEFAULT 0.0, "seed" INTEGER NOT NULL DEFAULT -1, "noise_strength" REAL NOT NULL DEFAULT 0.0,' \
+				  f'"input_image" TEXT);'
 			self.db.execute(sql)
 			# Images table
 			sql = f'CREATE TABLE IF NOT EXISTS "images" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "batch_id" INTEGER NOT NULL,' \
-				  f'"path" TEXT NOT NULL, "nsfw" BOOLEAN NOT NULL DEFAULT FALSE, "time_taken" FLOAT NOT NULL, ' \
+				  f'"path" TEXT NOT NULL, "nsfw" BOOLEAN NOT NULL DEFAULT FALSE, "time_taken" REAL NOT NULL, ' \
 				  f'"seed" INTEGER NOT NULL DEFAULT -1);'
 			self.db.execute(sql)
 		elif v == 1:
