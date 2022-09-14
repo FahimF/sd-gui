@@ -73,11 +73,11 @@ class SDEngine:
 		latent = torch.randn((1, self.pipe.unet.in_channels, self.cfg.height // 8, self.cfg.width // 8),
 			generator=generator, device=self.device)
 		if self.type == GeneratorType.img2img:
-			result = self.pipe(prompt=self.cfg.prompt, init_image=self.input_image, strength=self.cfg.noise_strength,
+			result = self.pipe(prompt=self.cfg.prompt.prompt, init_image=self.input_image, strength=self.cfg.noise_strength,
 				num_inference_steps=self.cfg.num_inference_steps, guidance_scale=self.cfg.guidance_scale,
 				generator=generator)
 		else:
-			result = self.pipe(prompt=self.cfg.prompt, num_inference_steps=self.cfg.num_inference_steps, width=self.cfg.width, height=self.cfg.height,
+			result = self.pipe(prompt=self.cfg.prompt.prompt, num_inference_steps=self.cfg.num_inference_steps, width=self.cfg.width, height=self.cfg.height,
 				guidance_scale=self.cfg.guidance_scale, latents=latent)
 		image = result["sample"][0]
 		is_nsfw = result["nsfw_content_detected"]

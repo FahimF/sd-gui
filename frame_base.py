@@ -1,6 +1,7 @@
 import os
 import time
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import filedialog as fd
 from PIL import Image, ImageTk
 from sd_engine import SDEngine, GeneratorType
@@ -17,10 +18,10 @@ class BaseFrame(tk.Frame):
 		curr = self.m_prompt.get(1.0, tk.END).strip()
 		print(f'Current prompt: {curr}')
 		print(f'Prompts: {self.cfg.prompts}')
-		if not curr in self.cfg.prompts:
-			result = tk.messagebox.askyesno(title='Are you sure?',
-												 message='The current prompt is not in history. Do you want to replace it?',
-												 icon='warning')
+		if not curr in self.cfg.string_prompts():
+			result = messagebox.askyesno(title='Are you sure?',
+				message='The current prompt is not in history. Do you want to replace it?',
+				icon='warning')
 			if not result:
 				return
 		prompt = self.prompt.get()
@@ -135,9 +136,9 @@ class BaseFrame(tk.Frame):
 
 	def generate_images(self):
 		# Get current values
-		self.cfg.prompt = self.m_prompt.get('1.0', tk.END).strip()
+		prompt = self.m_prompt.get('1.0', tk.END).strip()
 		# Add new prompt to the prompts array - deduping and other logic in method
-		self.cfg.add_prompt(self.cfg.prompt)
+		self.cfg.add_prompt(prompt)
 		self.cfg.input_image = self.init_image.get()
 		self.cfg.scheduler = self.scheduler.get()
 		self.cfg.width = self.width.get()
@@ -158,7 +159,7 @@ class BaseFrame(tk.Frame):
 		if self.type == GeneratorType.img2img:
 			# Is there an image specified?
 			if len(self.cfg.input_image) == 0 or not os.path.exists(self.cfg.input_image):
-				tk.messagebox.showwarning(title='Error',
+				messagebox.showwarning(title='Error',
 											   message='You need to select a valid Input Image if you want to use an image input.')
 				return
 		# TODO - If there's a non-random seed value but number of copies is not 1, should we warn/exit?
@@ -191,7 +192,7 @@ class BaseFrame(tk.Frame):
 			h = open(tn, "w")
 			h.write(f"Engine: {self.type}\n")
 			h.write(f"Scheduler: {self.cfg.scheduler}\n")
-			h.write(f"prompt={self.cfg.prompt}\n")
+			h.write(f"prompt={self.cfg.prompt.prompt}\n")
 			h.write(f"width={self.cfg.width}\n")
 			h.write(f"height={self.cfg.height}\n")
 			if self.type == GeneratorType.img2img:

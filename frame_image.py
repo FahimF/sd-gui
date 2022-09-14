@@ -9,7 +9,7 @@ class ImageFrame(BaseFrame):
 		# Configuration values
 		lbl_font = parent.label_font
 		# Field values
-		self.prompt = tk.StringVar(self, cfg.prompts[0])
+		self.prompt = tk.StringVar(self, cfg.prompt.prompt)
 		self.init_image = tk.StringVar(self, '')
 		self.scheduler = tk.StringVar(self, cfg.scheduler)
 		self.width = tk.IntVar(self, cfg.width)
@@ -33,9 +33,10 @@ class ImageFrame(BaseFrame):
 		# Prompt text field
 		self.m_prompt = tk.Text(self, height=8, width=40, wrap=tk.WORD)
 		self.m_prompt.grid(row=1, column=0, padx=8, pady=(2, 4), sticky='EW')
-		self.m_prompt.insert('1.0', cfg.prompt)
+		self.m_prompt.insert('1.0', cfg.prompt.prompt)
 		# Previous prompts picker
-		self.m_prompts = ttk.Combobox(self, state="readonly", textvariable=self.prompt, values=cfg.prompts)
+		items = cfg.string_prompts()
+		self.m_prompts = ttk.Combobox(self, state="readonly", textvariable=self.prompt, values=items)
 		self.m_prompts.grid(row=2, column=0, padx=8, pady=(2, 4), sticky='EW')
 		self.m_prompts.bind('<<ComboboxSelected>>', self.prompts_changed)
 		# Left - Input image label

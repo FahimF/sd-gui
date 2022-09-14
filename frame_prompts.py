@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
 class PromptsFrame(tk.Frame):
 	def __init__(self, parent, cfg, *args, **kwargs):
@@ -13,7 +14,7 @@ class PromptsFrame(tk.Frame):
 		# Create UI
 		self.m_prompt = tk.Text(self, width=125, height=4, wrap=tk.WORD)
 		self.m_prompt.grid(row=0, column=0, columnspan=2, padx=8, pady=(4, 2), sticky='EW')
-		self.m_prompt.insert('1.0', cfg.prompt)
+		self.m_prompt.insert('1.0', cfg.prompt.prompt)
 		# Actions
 		m_actions = tk.Frame(self)
 		m_actions.grid(row=1, column=0, columnspan=2)
@@ -34,7 +35,7 @@ class PromptsFrame(tk.Frame):
 		self.m_prompts.heading(2, text='Prompt', anchor=tk.W)
 		# Add data
 		for i, p in enumerate(cfg.prompts):
-			self.m_prompts.insert(parent='', index=i, iid=i, text='', values=(f'{i}', p))
+			self.m_prompts.insert(parent='', index=i, iid=i, text='', values=(f'{p.id}', p.prompt))
 		self.m_prompts.grid(row=3, column=0, padx=8, pady=(4, 8), sticky='NSEW')
 		# Tree scrollbar
 		self.m_scroll = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.m_prompts.yview)
@@ -52,7 +53,7 @@ class PromptsFrame(tk.Frame):
 		prompt = self.m_prompt.get('1.0', tk.END).strip()
 		# Verify that the prompt isn't already in list
 		if prompt in self.cfg.prompts:
-			tk.messagebox.showerror(title='Are you sure?',
+			messagebox.showerror(title='Are you sure?',
 				message='The new prompt is already in history. Please enter a different prompt!',
 				icon='warning')
 			return
@@ -71,7 +72,7 @@ class PromptsFrame(tk.Frame):
 		# Verify that the prompt isn't already in list
 		cnt = self.cfg.prompts.count(prompt)
 		if cnt > 0:
-			tk.messagebox.showerror(title='Are you sure?',
+			messagebox.showerror(title='Are you sure?',
 				message='The updated prompt is already in history. Please enter a different prompt!',
 				icon='warning')
 			return
@@ -80,7 +81,7 @@ class PromptsFrame(tk.Frame):
 
 	def delete_prompt(self):
 		sel = self.m_prompts.selection()[0]
-		result = tk.messagebox.askyesno(title='Are you sure?',
+		result = messagebox.askyesno(title='Are you sure?',
 			message='This will delete the selected prompt. Do you want to proceed?',
 			icon='warning')
 		if not result:
