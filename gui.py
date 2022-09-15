@@ -34,8 +34,8 @@ def type_changed(event):
 		m_lbl_input.grid(row=0, column=0, padx=(16, 8), pady=(4, 2), sticky=W)
 		m_txt_input.grid(row=1, column=0, padx=(16, 8), pady=(2, 4), sticky=W)
 		m_btn_input.grid(row=1, column=1, padx=8, pady=(2, 4), sticky=W)
-		m_lbl_strength.grid(row=4, column=0, columnspan=2, padx=(16, 8), pady=(4, 2), sticky=W)
-		m_strength.grid(row=5, column=0, columnspan=2, padx=(16, 8), pady=(2, 4), sticky=W)
+		m_lbl_strength.grid(row=5, column=0, columnspan=2, padx=(16, 8), pady=(4, 2), sticky=W)
+		m_strength.grid(row=6, column=0, columnspan=2, padx=(16, 8), pady=(2, 4), sticky=W)
 	else:
 		m_lbl_input.grid_forget()
 		m_txt_input.grid_forget()
@@ -247,7 +247,7 @@ def generate_images():
 		generator = generator.manual_seed(seed)
 		g_seeds.append(seed)
 		latent = torch.randn((1, pipe.unet.in_channels, cfg.height // 8, cfg.width // 8),
-			generator=generator, device=device)
+			generator=generator, device='cpu').to(device)
 		if cfg.type == 'Text + Image Prompt':
 			result = pipe(prompt=cfg.prompt, init_image=image, strength=cfg.noise_strength,
 				num_inference_steps=cfg.num_inference_steps, guidance_scale=cfg.guidance_scale,
