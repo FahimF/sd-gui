@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from data.prompt import Prompt
 
 class PromptsFrame(tk.Frame):
 	def __init__(self, parent, cfg, *args, **kwargs):
@@ -34,7 +35,9 @@ class PromptsFrame(tk.Frame):
 		self.m_prompts.heading(1, text='Id', anchor=tk.CENTER)
 		self.m_prompts.heading(2, text='Prompt', anchor=tk.W)
 		# Add data
-		for i, p in enumerate(cfg.prompts):
+		p = Prompt(self.cfg.db)
+		self.prompts = p.all()
+		for i, p in enumerate(self.prompts):
 			self.m_prompts.insert(parent='', index=i, iid=i, text='', values=(f'{p.id}', p.prompt))
 		self.m_prompts.grid(row=3, column=0, padx=8, pady=(4, 8), sticky='NSEW')
 		# Tree scrollbar
@@ -45,7 +48,7 @@ class PromptsFrame(tk.Frame):
 
 	def item_selected(self, event):
 		ndx = int(self.m_prompts.selection()[0])
-		prompt = self.cfg.prompts[ndx]
+		prompt = self.prompts[ndx].prompt
 		self.m_prompt.delete(1.0, tk.END)
 		self.m_prompt.insert(tk.END, prompt)
 
@@ -58,32 +61,39 @@ class PromptsFrame(tk.Frame):
 				icon='warning')
 			return
 		i = len(self.cfg.prompts)
-		self.cfg.add_prompt(prompt)
-		self.m_prompts.insert(parent='', index=i, iid=i, text='', values=(f'{i}', prompt))
+		p = self.cfg.add_prompt(prompt)
+		self.prompts.insert(0, p)
+		self.m_prompts.insert(parent='', index=i, iid=i, text='', values=(f'{p.id}', p.prompt))
 
 	def edit_prompt(self):
 		prompt = self.m_prompt.get('1.0', tk.END).strip()
 		sel = self.m_prompts.selection()[0]
 		ndx = int(sel)
-		curr = self.cfg.prompts[ndx]
+		curr = self.prompts[ndx]
 		# If the new value matches the old value, do nothing
-		if curr == prompt:
+		if curr.prompt == prompt:
 			return
 		# Verify that the prompt isn't already in list
-		cnt = self.cfg.prompts.count(prompt)
+		lst = list(map(lambda p: p.prompt, self.prompts))
+		cnt = lst.count(prompt)
 		if cnt > 0:
 			messagebox.showerror(title='Are you sure?',
 				message='The updated prompt is already in history. Please enter a different prompt!',
 				icon='warning')
 			return
-		self.cfg.prompts[ndx] = prompt
-		self.m_prompts.item(sel, text='', values=(f'{ndx}', prompt))
+		curr.prompt = prompt
+		curr.save()
+		self.m_prompts.item(sel, text='', values=(f'{curr.id}', curr.prompt))
 
 	def delete_prompt(self):
 		sel = self.m_prompts.selection()[0]
+		ndx = int(sel)
+		curr = self.prompts[ndx]
 		result = messagebox.askyesno(title='Are you sure?',
-			message='This will delete the selected prompt. Do you want to proceed?',
+			message=f'This will delete the prompt: {curr.prompt}.\nDo you want to proceed?',
 			icon='warning')
 		if not result:
 			return
+		curr.delete()
+		self.prompts.delete(curr)
 		self.m_prompts.delete(sel)

@@ -141,6 +141,8 @@ class BaseFrame(tk.Frame):
 		prompt = self.m_prompt.get('1.0', tk.END).strip()
 		# Add new prompt to the prompts array - deduping and other logic is in method
 		self.cfg.add_prompt(prompt)
+		# Update prompts list
+		self.m_prompts['values'] = self.cfg.string_prompts
 		# Create new batch record and save it
 		batch = Batch(self.cfg.db)
 		batch.prompt_id = self.cfg.prompt.id

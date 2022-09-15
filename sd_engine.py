@@ -21,8 +21,7 @@ class SDEngine:
 		self.type = type
 		self.generator = torch.Generator(device='cpu')
 		# Device definition
-		self.device = torch.device(
-			"cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+		self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 		# Set up scheduler based on selection
 		sched = None
 		if self.cfg.scheduler == 'LMS':
@@ -71,7 +70,7 @@ class SDEngine:
 		# Update generator with seed
 		generator = self.generator.manual_seed(seed)
 		latent = torch.randn((1, self.pipe.unet.in_channels, self.cfg.height // 8, self.cfg.width // 8),
-			generator=generator, device=self.device)
+			generator=generator, device='cpu').to(self.device)
 		if self.type == GeneratorType.img2img:
 			result = self.pipe(prompt=self.cfg.prompt.prompt, init_image=self.input_image, strength=self.cfg.noise_strength,
 				num_inference_steps=self.cfg.num_inference_steps, guidance_scale=self.cfg.guidance_scale,
@@ -81,4 +80,4 @@ class SDEngine:
 				guidance_scale=self.cfg.guidance_scale, latents=latent)
 		image = result["sample"][0]
 		is_nsfw = result["nsfw_content_detected"]
-		return image, is_nsfw, self.cfg.seed
+		return image, is_nsfw, seed

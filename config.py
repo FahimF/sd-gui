@@ -84,6 +84,7 @@ class Config:
 		# Update new prompt
 		self.prompt = p
 		self.prompts.insert(0, p)
+		return p
 
 	def save(self):
 		type = 'Text Prompt' if self.type == GeneratorType.txt2img else 'Text + Image'
