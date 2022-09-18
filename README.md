@@ -77,7 +77,17 @@ If you are still at the terminal, simply type the following to launch the UI:
 python gui.py
 ```
 
-If you closed the terminal or want to use the UI at some other point, you'd have to navigate back to where you have this repo (`sd-gui`) before you run the above command.
+If you closed the terminal or want to use the UI at some other point, you'd have to navigate back to where you have this repo (`sd-gui`) before you run the above command. 
+
+**Note:** If you are not familiar with conda, do note that every time you close your terminal, your Python environment will revert to the base environment when you next start terminal. But the base environment does not have all the packages you installed above since those are in the `ml` environment. So you have to switch to that environment (and to the `sd-gui` folder) before you can run the GUI again. So you'll need to run something like the following each time you start a new terminal session:
+
+```bash
+conda activate ml
+cd sd-gui
+python guin.py
+```
+
+ Of course, in the above, change the `cd sd-gui` to put the actual location of `sd-gui` on your hard disk 🙂
 
 ### Installation Errors
 
