@@ -47,6 +47,7 @@ There is some limited information which might help you in this blog post, but th
 # /bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)"
 
 # Create and activate new conda environment named ml
+conda config --append channels conda-forge
 conda create -n ml python=3.8.8
 conda activate ml
 
