@@ -12,7 +12,7 @@ class SDServer:
 		if self.addr[-1] != '/':
 			self.addr += '/'
 
-	def generate(self, prompt: str, width, height, seed, guidance, image:Image=None, strength=0):
+	def generate(self, prompt: str, width, height, seed, guidance, image: Image = None, strength=0):
 		request_data = {
 			'scheduler': self.scheduler,
 			'prompt': prompt,
@@ -22,8 +22,9 @@ class SDServer:
 			'guidance': guidance,
 			'steps': self.steps,
 			'strength': strength,
-			'image': np.array(image).tolist()
 		}
+		if image is not None:
+			request_data['image'] = image
 		url = self.addr + 'generate'
 		resp = requests.post(url, json=request_data)
 		resp_data = resp.json()
@@ -118,7 +119,7 @@ def run_app():
 			'seed': seed
 		})
 
-	app.run()
+	app.run(host= '0.0.0.0')
 
 if __name__ == '__main__':
 	run_app()

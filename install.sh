@@ -3,14 +3,14 @@ read  -n 1 -p "Create conda environment (y/n)?" input
 if [[ $input = n ]] ; then
 	printf "\nBypassing environment creation ...\n"
 else
-	conda create -n mlnew python=3.9.13	
+	conda create -n ml python=3.9.13	
 fi
 read  -n 1 -p "Activate new conda environment (y/n)?" input
 if [[ $input = n ]] ; then
 	printf "\nBypassing environment activation ...\n"
 else
 	# conda activate mlnew
-	source "/Users/$USER/miniforge3/bin/activate" mlnew
+	source "/Users/$USER/miniforge3/bin/activate" ml
 fi
 read  -n 1 -p "Continue (y/n)?" input
 if [[ $input = n ]] ; then
@@ -27,3 +27,10 @@ if [[ $input = n ]] ; then
 	exit
 fi
 pip install --pre -r requirements.txt -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+read  -n 1 -p "Download the Stable Diffusion model (y/n)?" input
+if [[ $input = n ]] ; then
+	printf "\nQuitting ...\n"
+	exit
+fi
+git lfs install
+git clone https://huggingface.co/CompVis/stable-diffusion-v1-4

@@ -1,6 +1,6 @@
 # Linux Installation
 
-Placeholder document till full instruction can be added. For the time being, if you are familiar with Python, minconda, and the terminal and have git and git-lfs installed, you should be able to get going by using the following commands (or variants thereof):
+If you are familiar with Python, minconda, and the terminal and have git and git-lfs installed, you should be able to get going by using the following commands (or variants thereof):
 
 ```bash
 # Create and activate new conda environment named ml

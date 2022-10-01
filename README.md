@@ -6,7 +6,11 @@ The aim of the GUI is to keep things as simple as possible and yet provide as ma
 
 **Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image!
 
-![gui](screens/01-main.jpg)
+![01-main](/Users/fahim/Code/Python/sd-gui/screens/01-main.jpg)
+
+| ![gui(screens/01-main.jpg)](screens/01-main_thumb.jpg) | ![gui(screen/01-win-main.jpg)](screens/01-win-main_thumb.jpg) |           |
+| ------------------------------------------------------ | ------------------------------------------------------------ | --------- |
+| **macOS**                                              | **Windows**                                                  | **Linux** |
 
 The GUI has the following functionality:
 
@@ -86,7 +90,19 @@ python app.py
 
 ### Running the Server
 
+You can run the server from a terminal/command-line by simply running the following command:
 
+```bash
+python server.py
+```
+
+This should result in something like the following as output:
+
+![05-win-server](/Users/fahim/Code/Python/sd-gui/screens/05-win-server.jpg)
+
+Once the server is running, you can connect to it from another machine using the server's IP and the port number 5000. So, if your server IP address is 192.168.0.11 as in the above screenshot, then run the GUI on your local machine, set the Server to Remote and then enter the IP and port number as follows before you generate an image:
+
+![06-connect-server](/Users/fahim/Code/Python/sd-gui/screens/06-connect-server.jpg)
 
 ## Installation Errors
 

@@ -21,6 +21,8 @@ class Config:
 	width = 512
 	height = 512
 	modifiers = {}
+	server = 'local'
+	server_address = 'http://127.0.0.1:5000'
 	# is_nsfw = False
 	# time_taken = ''
 
@@ -67,6 +69,8 @@ class Config:
 				self.seed = data['seed']
 				self.width = data['width']
 				self.height = data['height']
+				self.server = data['server']
+				self.server_address = data['server_address']
 				file.close()
 		# Load modifiers
 		c = Category(self.db)
@@ -105,7 +109,7 @@ class Config:
 		data = {'type': type, 'scheduler': self.scheduler, 'prompt': p, 'input_image': self.input_image,
 				'noise_strength': self.noise_strength, 'num_inference_steps': self.num_inference_steps,
 				'guidance_scale': self.guidance_scale, 'num_copies': self.num_copies, 'seed': self.seed,
-				'width': self.width, 'height': self.height}
+				'width': self.width, 'height': self.height, 'server': self.server, 'server_address': self.server_address}
 		str = json.dumps(data)
 		with open('config.json', 'w') as file:
 			file.write(str)

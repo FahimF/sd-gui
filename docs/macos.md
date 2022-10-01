@@ -8,6 +8,8 @@ You will need the following:
 
 There is some limited information regarding running on Apple Silicon in this blog post, but it doesn't go into a lot of detail: https://write.farook.org/adventures-in-imagineering-mining-the-apple-silicon/ Please read it if you are stuck and see if any of the issues listed there are relevant to your particular case.
 
+There are some pre-requisites that must be in place before you can install the SD GUI code and run it.
+
 ## Pre-requisites
 
 You might not need all of the following pre-requisites, but it might be helpful to have them in place before you try to install the app. But if you are familiar with the command-line and know what you are doing, feel free to pick and choose as necessary 🙂
@@ -70,9 +72,18 @@ There's an installer bash script which will prompt you at the relevant points an
 
 Do note though that the installer is not well tested and has very little error handling. If it works, fine. If not, you would still need to figure out why the installer failed or try the manual installation steps in the next section.
 
-To run the automated installer, all you need to do is open terminal, switch to the `sd-gui` folder and run the following command:
+To run the automated installer, you'd need to download the code from this repo first. So open the terminal, navigate to the folder where you want to place the code from this repo and run the following command:
 
 ```bash
+git clone https://github.com/FahimF/sd-gui.git
+```
+
+
+
+Next, while still at the terminal, run the following commands to change over to the source code folder and run the installer:
+
+```bash
+cd sd-gui
 ./install.sh
 ```
 
@@ -95,9 +106,6 @@ conda install pyqt
 conda install pytorch -c pytorch-nightly
 conda install -c conda-forge transformers diffusers ftfy flask scipy
 pip install opencv-python
-
-# Install git and git-lfs via Homebrew
-brew install git git-lfs
 
 # Clone this repo and create output folder
 git clone https://github.com/FahimF/sd-gui.git

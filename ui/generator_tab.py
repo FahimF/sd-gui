@@ -253,7 +253,7 @@ class GeneratorTab(BaseTab):
 			else:
 				self.server_address.setEnabled(True)
 		server_options = ['local', 'remote']
-		self.server_type = ComboBox('Server', server_options, on_select=server_changed)
+		self.server_type = ComboBox('Server', server_options, self.cfg.server, on_select=server_changed)
 		self.server_type.setToolTip('Whether to run the image generation locally or connect to a remote server to do so.')
 		run_groupbox_layout.addWidget(self.server_type)
 		self.server_address = QLineEdit()
@@ -261,7 +261,7 @@ class GeneratorTab(BaseTab):
 		self.server_address.setPlaceholderText('server address')
 		if self.server_type.value() == 'local':
 			self.server_address.setDisabled(True)
-		self.server_address.setText('http://127.0.0.1:5000')
+		self.server_address.setText(self.cfg.server_address)
 		run_groupbox_layout.addWidget(self.server_address)
 		# Generate
 		self.b_generate = QPushButton('Generate')
@@ -380,6 +380,8 @@ class GeneratorTab(BaseTab):
 		self.batch.num_copies = self.cfg.num_copies = self.num_copies.value()
 		self.batch.seed = self.cfg.seed = int(self.seed_text.text())
 		# Save current configuration before image generation
+		self.cfg.server = self.server_type.value()
+		self.cfg.server_address = self.server_address.text()
 		self.cfg.save()
 		self.cfg.display()
 		self.batch.save()
