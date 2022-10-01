@@ -1,96 +1,94 @@
-# Stable Diffusion for Apple Silicon
+# Stable Diffusion GUI
 
-This repo is my work on getting Stable Diffusion working on Apple Silicon macs by keeping things as simple as possible. The requirements are kept as simple as possible and probably the most complicated thing is the GUI which allows you to set up all your image generation parameters on a GUI whether you are on a Mac, Linux, or Windows.
+This repo is my work on getting a functional and feature-rich GUI working for Stable Diffusion. All the development and testing was done on Apple Silicon macs but the code should work under Windows and Linux as well. It has been tested under Windows and Linux, but not extensively — if you find bugs, please do let me know and I'll fix them 🙂
 
-**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image! No testing has been done on any other platform (Windows and Linux) but it should (theoretically) work on other platforms too.
+The aim of the GUI is to keep things as simple as possible and yet provide as many features as is necessary to get your work done should you do a lot of image generation using Stable Diffusion. The original aim was to keep the Python package requirements as low (and simple) as possible while providing a GUI that works  on a Mac, Linux, or Windows. However, the package requirements might change as more functionality is added to the GUI.
 
-![gui](assets/gui.jpg)
+**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image!
+
+![gui](screens/01-main.jpg)
 
 The GUI has the following functionality:
 
-* You can choose between generating via just a text prompt or a text + image prompt
+* You can generate images via just a text prompt or a text prompt + image (either txt2img or img2img)
+
+* Remember all the prompts you've used in the past and allows you to manage them via a simple interface
+
+* Allows you to add modifiers (such as artists, art styles etc.) to your prompts, provides a built-in list of modifiers, and allows you to manage the list of modifiers and modifier categories. You can add as many new modifiers as you want or organize them as you want.
+
+  ![03-prompts](/Users/fahim/Code/Python/sd-gui/screens/03-prompts.jpg)
+
+* You can use the default Standard Diffusion scheduler/sampler or select another scheduler/sampler from the available list.
+
 * You can specify the size of the image that you want to generate
-* Remembers the last settings (and prompt) you used the next time you run the script
-* Remembers your last 20 prompts and allows you to select an old prompt via the history list
-* Has the ability to switch between multiple schedulers to compare generated images
+
+* Remembers the last settings (and prompt) you used the next time you run the app
+
 * Can generate more than one image at a time and allows you to view all generated images in the GUI
+
 * Saves all generated images and the accompanying prompt info to hard drive
-* Allows you to delete any image and its prompt info from the GUI itself
+
+* Allows you to delete any image and its prompt info from within the GUI itself
+
 * Shows you the seed for any image so that you can use that seed to generate image variants
+
+* Allows you to run the GUI locally but run a server elsewhere so that you can connect to the server from the GUI and do image generation on the server — great for when your local machine isn't powerful enough for SD but you still want the convenience of the GUI locally.
+
+* Shows a log of all console output and errors within the app itself so that you can see what is going on without having to go back to the console to see what happened.
+
+* Has a built-in basic editor so that you can create basic prompt images or create masks from a generated image for inpainting.
+
+  ![02-editor](/Users/fahim/Code/Python/sd-gui/screens/02-editor.jpg)
+
+* Allows you to in/outpaint images from within the image editor interface.
+
+* Has a built-in image gallery which shows you all images in the app output folder and if the images were generated from within the app, also shows creation and prompt information for those images.
+
+  ![04-gallery](/Users/fahim/Code/Python/sd-gui/screens/04-gallery.jpg)
 
 ## Installation
 
-You will need the following:
-
-* An Apple Silicon or Intel mac (has not been tested on anything else)
-* macOS 12.3 Monterey or later
-* Python
-
 Before you start your installation, you might also want to sign up at [Hugging Face](https://huggingface.co/) since you'll need a Hugging Face user account in order to download the Stable Diffusion models. Do note also that you would need to visit the [Hugging Face Stable Diffusion model page](https://huggingface.co/CompVis/stable-diffusion-v1-4) and accept their license before you would be able to download the model — you'll need to download the model during the installation.
 
-There's also an [Installation Errors](#installation-errors) section further down. Please refer to that if you run into issues since common issues that others have faced are documented there 🙂
+There's also an [Installation Errors](#installation-errors) section further down in this document. Please refer to that if you run into issues since common issues that others have faced are documented there 🙂
 
-To get set up, you'll need to run the following commands in terminal one at a time. Do note that some of these commands would require you to make decisions and respond to prompts. If you are not comforable with that, this process might not be for you 🙂
+To get set up, you'll need to run the following commands in terminal one at a time. Do note that some of these commands would require you to make decisions and respond to prompts. If you are not comforable with that, this process might not be for you and you might wan to try one of the one-click installers [listed here](https://www.reddit.com/r/StableDiffusion/comments/xi83vo/stable_diffusion_guis_for_apple_silicon/) 🙂
 
-There is some limited information which might help you in this blog post, but that too doesn't go into a lot of detail: https://write.farook.org/adventures-in-imagineering-mining-the-apple-silicon/
+For installation instructions for each OS, refer to the relevant OS sub-document below for installation instructions. The sub-documents are a work in progress and will be updated over time as I test fully on each OS:
 
-**Note:** Make sure you are in the folder location where you want to have this repo before you start running the following commands.
+* [macOS](docs/macos.md)
+
+* [Windows](docs/windows.md)
+
+* [Linux](docs/linux.md)
+
+## Running the GUI
+
+Once you've complted the installation following the installation instructions above, if you are still at the terminal, simply type the following to launch the UI:
 
 ```bash
-# install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install miniconda to manage your Python environments
-/bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh)"
-# If the above line does not work to install miniconda correctly (some have reported issues) try the instructions at this link instead: https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html
-#Also, if you are on an Intel Mac, use the following command to install miniconda for Intel macs:
-# /bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)"
-
-# Create and activate new conda environment named ml
-conda config --append channels conda-forge
-conda create -n ml python=3.8.8
-conda activate ml
-
-# Install the needed Python packages
-conda install pytorch torchvision torchaudio -c pytorch-nightly
-conda install transformers
-conda install -c conda-forge diffusers
-conda install ftfy
-
-# Install git and git-lfs via Homebrew
-brew install git git-lfs
-
-# Clone this repo and create output folder
-git clone https://github.com/FahimF/sd-gui.git
-cd sd-gui
-mkdir output
-
-# Clone the Hugging Face model repo - you will need the Hugging Face user and password for this step
-git lfs install
-git clone https://huggingface.co/CompVis/stable-diffusion-v1-4
-```
-
-If all of the above worked correctly and there were no issues, then you should be set 🙂
-
-If you are still at the terminal, simply type the following to launch the UI:
-
-```
-python gui.py
+python app.py
 ```
 
 If you closed the terminal or want to use the UI at some other point, you'd have to navigate back to where you have this repo (`sd-gui`) before you run the above command. 
 
-**Note:** If you are not familiar with conda, do note that every time you close your terminal, your Python environment will revert to the base environment when you next start terminal. But the base environment does not have all the packages you installed above since those are in the `ml` environment. So you have to switch to that environment (and to the `sd-gui` folder) before you can run the GUI again. So you'll need to run something like the following each time you start a new terminal session:
+**Note:** If you are not familiar with conda, do note that every time you close your terminal, your Python environment will revert to the base environment when you next start a terminal session. 
+
+The base environment does not have all the packages you installed above since those are in the `ml` environment. So you have to switch to that environment (and navigate to the `sd-gui` folder) before you can run the GUI again. So you'll need to run something like the following each time you start a new terminal session:
 
 ```bash
 conda activate ml
 cd sd-gui
-python guin.py
+python app.py
 ```
 
  Of course, in the above, change the `cd sd-gui` to put the actual location of `sd-gui` on your hard disk 🙂
 
-### Installation Errors
+### Running the Server
+
+
+
+## Installation Errors
 
 * If you get a Homebrew error like this: `homebrew-core is a shallow clone` then run the following command in terminal:
 
@@ -159,6 +157,14 @@ python guin.py
 
 ## Known Issues
 
+* The latest Pytorch night (1.13.0.dev20220930) appears to be much slower in generating images on an Apple Silicon machine than the previous Pytorch nightly that I used (1.13.0.dev20220922). I don't know if this is a permanent situation or something that will get fixed in the future. I tried setting up conda to install using the particular nightly version that is faster (at least for me) but conda could not find that particular build — if you have a solution for that, please let me know. If you do want to switch to the faster Pytorch nightly version, the only way I know of is to run the folloiwng command *after* you've completed the installation as detailed above:
+
+  ```bash
+  pip install --pre -r requirements.txt -f https://download.pytorch.org/whl/nightly/torch_nightly.html
+  ```
+
 * ~~You get an error message saying: "[indices should be either on cpu or on the same device as the indexed tensor (cpu)](https://github.com/huggingface/diffusers/issues/239)" Know issue that has been reported to Hugging Face. Read the issue comments to see [how it can be fixed](https://github.com/huggingface/diffusers/issues/239#issuecomment-1236092655) by modifying the diffusers source code ...~~(Fixed in the latest Hugging Face diffusers dev branch. Should be out with diffusers 0.4.0)
+
 * ~~You get an error saying: "[Cannot convert a MPS Tensor to float64 dtype as the MPS framework doesn't support float64. Please use float32 instead](https://github.com/huggingface/diffusers/issues/358)" Known issue that has been reported to Hugging Face. Read the issue comments to see [how it can be fixed](https://github.com/huggingface/diffusers/issues/358#issue-1361673427) by modifying the diffusers source code ...~~ (Appears to have been a PyTorch nightly issue.)
+
 * ~~If you try to generate an image using both an image and a text prompt, you'll get a brown image as the result. This used to work previously but is broken in the diffusers 0.3.0 release. [Issue reported](https://github.com/huggingface/diffusers/issues/462).~~ (Appears to have been a PyTorch nightly issue.)

@@ -14,3 +14,7 @@ simple3.py
 stable_diffusion_seeds.ipynb
 test.py
 test2.py
+clip-vit-large-patch14
+__pycache__
+config.json
+test

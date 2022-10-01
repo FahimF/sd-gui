@@ -1,0 +1,26 @@
+# Linux Installation
+
+Placeholder document till full instruction can be added. For the time being, if you are familiar with Python, minconda, and the terminal and have git and git-lfs installed, you should be able to get going by using the following commands (or variants thereof):
+
+```bash
+# Create and activate new conda environment named ml
+conda config --append channels conda-forge
+conda create -n ml python=3.9.13
+conda activate ml
+
+# Install the needed Python packages
+conda install torch -c pytorch-nightly
+conda install pyqt
+conda install -c conda-forge transformers diffusers ftfy flask scipy
+pip install opencv-python
+
+# Clone this repo and create output folder
+git clone https://github.com/FahimF/sd-gui.git
+cd sd-gui
+mkdir output
+
+# Clone the Hugging Face model repo - you will need the Hugging Face user and password for this step
+git lfs install
+git clone https://huggingface.co/CompVis/stable-diffusion-v1-4
+```
+
