@@ -66,3 +66,17 @@ git lfs install
 git clone https://huggingface.co/CompVis/stable-diffusion-v1-4
 ```
 
+# Windows Screenshots
+
+Here are some screenshots of the GUI that you'll be able to see after all of that effort 🙂
+
+|            ![01-main](../screens/win-01-main.jpg)            |
+| :----------------------------------------------------------: |
+|              The main tab for generating images              |
+|          ![02-editor](../screens/win-02-editor.jpg)          |
+|   The editor tab for in/outpainting or doing basic editing   |
+|         ![03-prompts](../screens/win-03-prompts.jpg)         |
+|      The prompts tab for editing prompts and modifiers       |
+|         ![04-gallery](../screens/win-04-gallery.jpg)         |
+| The gallery tab for viewing all output images and their prompts |
+

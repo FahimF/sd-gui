@@ -6,11 +6,11 @@ The aim of the GUI is to keep things as simple as possible and yet provide as ma
 
 **Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image!
 
-![01-main](/Users/fahim/Code/Python/sd-gui/screens/01-main.jpg)
+![01-main](screens/mac-01-main.jpg)
 
-| ![gui(screens/01-main.jpg)](screens/01-main_thumb.jpg) | ![gui(screen/01-win-main.jpg)](screens/01-win-main_thumb.jpg) |           |
-| ------------------------------------------------------ | ------------------------------------------------------------ | --------- |
-| **macOS**                                              | **Windows**                                                  | **Linux** |
+| ![gui(screens/mac-01-main.jpg)](screens/mac-01-main_thumb.jpg) | ![gui(screen/win-01-main.jpg)](screens/win-01-main_thumb.jpg) | ![gui(screen/lin-01-main.jpg)](screens/lin-01-main_thumb.jpg) |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **macOS**                                                    | **Windows**                                                  | **Linux**                                                    |
 
 The GUI has the following functionality:
 
@@ -20,7 +20,7 @@ The GUI has the following functionality:
 
 * Allows you to add modifiers (such as artists, art styles etc.) to your prompts, provides a built-in list of modifiers, and allows you to manage the list of modifiers and modifier categories. You can add as many new modifiers as you want or organize them as you want.
 
-  ![03-prompts](/Users/fahim/Code/Python/sd-gui/screens/03-prompts.jpg)
+  ![03-prompts](screens/mac-03-prompts.jpg)
 
 * You can use the default Standard Diffusion scheduler/sampler or select another scheduler/sampler from the available list.
 
@@ -42,13 +42,13 @@ The GUI has the following functionality:
 
 * Has a built-in basic editor so that you can create basic prompt images or create masks from a generated image for inpainting.
 
-  ![02-editor](/Users/fahim/Code/Python/sd-gui/screens/02-editor.jpg)
+  ![02-editor](screens/mac-02-editor.jpg)
 
 * Allows you to in/outpaint images from within the image editor interface.
 
 * Has a built-in image gallery which shows you all images in the app output folder and if the images were generated from within the app, also shows creation and prompt information for those images.
 
-  ![04-gallery](/Users/fahim/Code/Python/sd-gui/screens/04-gallery.jpg)
+  ![04-gallery](screens/mac-04-gallery.jpg)
 
 ## Installation
 
@@ -98,11 +98,11 @@ python server.py
 
 This should result in something like the following as output:
 
-![05-win-server](/Users/fahim/Code/Python/sd-gui/screens/05-win-server.jpg)
+![05-win-server](screens/win-05-server.jpg)
 
 Once the server is running, you can connect to it from another machine using the server's IP and the port number 5000. So, if your server IP address is 192.168.0.11 as in the above screenshot, then run the GUI on your local machine, set the Server to Remote and then enter the IP and port number as follows before you generate an image:
 
-![06-connect-server](/Users/fahim/Code/Python/sd-gui/screens/06-connect-server.jpg)
+![06-connect-server](screens/mac-06-connect-server.jpg)
 
 ## Installation Errors
 
