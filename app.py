@@ -1,3 +1,4 @@
+import os
 import sys
 import pathlib
 
@@ -106,8 +107,18 @@ if __name__ == '__main__':
     # Create Queue and redirect system output to this queue
     queue = Queue()
     # sys.stdout = sys.stderr = LogStream(queue)
+    # Windows specific changes to make it display correctly
+    if os.name == 'nt':
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
     # The app
     app = QApplication(sys.argv)
+    # Windows specific changes to make it display correctly
+    if os.name == 'nt':
+        font = app.font()
+        font.setPointSize(12)
+        app.setFont(font)
+    # Global configurations
     app.setWindowIcon(QIcon(str('assets/icon.png')))
     win = Window()
     # Create thread that will listen on the other end of the queue, and send the text to log console
@@ -118,4 +129,4 @@ if __name__ == '__main__':
     thread.started.connect(receiver.run)
     thread.start()
     # Start app
-    sys.exit(app.exec_())
+    app.exec()

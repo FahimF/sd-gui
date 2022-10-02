@@ -3,7 +3,7 @@ from enum import Enum
 from PIL import Image
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 from PyQt5.QtGui import QPainter, QBrush, QColor, QImage, QPen
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QSizePolicy
 
 class CanvasMode(Enum):
 	draw = 1
@@ -32,8 +32,12 @@ class CanvasWidget(QWidget):
 
 	def __init__(self, on_brush_changed=None, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+		self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 		self.on_brush_changed = on_brush_changed
 		self.setAcceptDrops(True)
+
+	def sizeHint(self):
+		return QSize(self.img_width, self.img_height)
 
 	def update_and(self, f):
 		def update_and_f(*args, **kwargs):
@@ -85,6 +89,8 @@ class CanvasWidget(QWidget):
 		if add_to_history and  (self.np_image is not None):
 			self.history.append(self.np_image.copy())
 		self.np_image = arr
+		# Update image width & height
+		self.img_height, self.img_width, _ = arr.shape
 		if save_original:
 			self.np_original_image = arr
 		self.qt_image = self.qimage_from_array(self.np_image)
@@ -262,12 +268,16 @@ class CanvasWidget(QWidget):
 		self.img_height += self.SIZE_INCREASE_INCREMENT
 		new_image = np.zeros((self.np_image.shape[0] + self.SIZE_INCREASE_INCREMENT, self.np_image.shape[1] +
 			self.SIZE_INCREASE_INCREMENT, 4), dtype=np.uint8)
+		new_orig = new_image
 		new_image[H:-H, H:-H, :] = self.np_image
 		self.set_np_image(new_image)
+		new_orig[H:-H, H:-H, :] = self.np_original_image
+		self.np_original_image = new_orig
 
 	def decrease_image_size(self):
 		H = self.SIZE_INCREASE_INCREMENT // 2
 		self.set_np_image(self.np_image[H:-H, H:-H, :])
+		self.np_original_image = self.np_original_image[H:-H, H:-H, :]
 
 	def paintEvent(self, e):
 		painter = QPainter(self)

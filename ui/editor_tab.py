@@ -2,7 +2,7 @@ import numpy as np
 import traceback
 from tools.config import Config
 from PIL import Image
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QWidget, QScrollArea, QGroupBox, QPushButton, QHBoxLayout, QLabel, \
 	QFrame, QPlainTextEdit, QFileDialog, QMessageBox, QColorDialog, QRadioButton
@@ -188,6 +188,10 @@ class EditorTab(BaseTab):
 		frame = QFrame()
 		frame.setFrameShape(QFrame.StyledPanel)
 		frame.layout = QVBoxLayout(frame)
+		self.edit_scroll = QScrollArea()
+		self.edit_scroll.setWidgetResizable(True)
+		self.edit_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+		self.edit_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 		# Prompt
 		self.prompt_text = QPlainTextEdit()
 		self.prompt_text.setToolTip('Enter the prompt text for the area you want to inpaint')
@@ -211,15 +215,13 @@ class EditorTab(BaseTab):
 		self.canvas = CanvasWidget(on_brush_changed=brush_changed)
 		bg = self.get_texture()
 		self.canvas.set_np_image(bg)
-		frame.layout.addWidget(self.canvas)
+		self.edit_scroll.setWidget(self.canvas)
+		frame.layout.addWidget(self.edit_scroll)
 		#  Actions
 		action_layout = QHBoxLayout()
 		b_save = QPushButton('Save Image')
 		action_layout.addWidget(b_save)
 		frame.layout.addLayout(action_layout)
-		# Spacing
-		# frame.layout.addStretch()
-
 		self.main_splitter.addWidget(frame)
 
 	def load_image(self, image: Image):
