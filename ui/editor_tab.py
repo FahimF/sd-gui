@@ -251,7 +251,7 @@ class EditorTab(BaseTab):
 		wd = self.canvas.selection_rectangle.width()
 		ht = self.canvas.selection_rectangle.height()
 		resized = np.array(image.resize((wd, ht), Image.LANCZOS))
-		self.canvas.set_selection_image(resized)
+		self.canvas.set_selection(resized, update_original=True)
 		self.canvas.update()
 
 	def do_load_image(self):
@@ -282,8 +282,6 @@ class EditorTab(BaseTab):
 			else:
 				iarr = self.canvas.get_selection_original()
 				marr = self.canvas.get_selection_np_image()
-			# Convert any transparent areas in mask image to white
-
 			# Convert NP arrays to images
 			image = Image.fromarray(np.uint8(iarr)).convert('RGB')
 			mask = Image.fromarray(np.uint8(marr)).convert('RGB')
@@ -390,13 +388,13 @@ class EditorTab(BaseTab):
 		self.canvas.update()
 
 	def fill_white(self):
-		if self.scope_full:
+		if self.scope_full.isChecked():
 			self.canvas.fill_transparent(full_image=True)
 		else:
 			self.canvas.fill_transparent()
 
 	def mask_black(self):
-		if self.scope_full:
+		if self.scope_full.isChecked():
 			self.canvas.create_mask(full_image=True)
 		else:
 			self.canvas.create_mask()

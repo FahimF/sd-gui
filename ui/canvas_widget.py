@@ -212,7 +212,7 @@ class CanvasWidget(QWidget):
 		if full_image:
 			self.set_np_image(new_image)
 		else:
-			self.set_selection_image(new_image)
+			self.set_selection(new_image)
 		self.update()
 
 	def fill_transparent(self, full_image: bool = False):
@@ -227,10 +227,10 @@ class CanvasWidget(QWidget):
 		if full_image:
 			self.set_np_image(new_image)
 		else:
-			self.set_selection_image(new_image)
+			self.set_selection(new_image)
 		self.update()
 
-	def set_selection_image(self, patch_image):
+	def set_selection(self, image, update_original: bool = False):
 		if self.selection_rectangle is not None:
 			image_rect = self.map_widget_to_image_rect(self.selection_rectangle)
 			image_rect, source_rect = self.crop_image_rect(image_rect)
@@ -239,7 +239,7 @@ class CanvasWidget(QWidget):
 			new_orig = self.np_original_image.copy()
 			target_width = image_rect.width()
 			target_height = image_rect.height()
-			patch_np = np.array(patch_image)[source_rect.top():source_rect.bottom(), source_rect.left():source_rect.right(), :][:target_height, :target_width, :]
+			patch_np = np.array(image)[source_rect.top():source_rect.bottom(), source_rect.left():source_rect.right(), :][:target_height, :target_width, :]
 			if patch_np.shape[-1] == 4:
 				patch_np, patch_alpha = patch_np[:, :, :3], patch_np[:, :, 3]
 				patch_alpha = (patch_alpha > 128) * 255
@@ -248,11 +248,13 @@ class CanvasWidget(QWidget):
 			new_image[image_rect.top():image_rect.top() + patch_np.shape[0],
 			image_rect.left():image_rect.left() + patch_np.shape[1], :][patch_alpha > 128] = \
 				np.concatenate([patch_np, patch_alpha[:, :, None]], axis=-1)[patch_alpha > 128]
-			# Update original and replace it here itself since set_np_image gets called from lots of placess
-			new_orig[image_rect.top():image_rect.top() + patch_np.shape[0],
-			image_rect.left():image_rect.left() + patch_np.shape[1], :][patch_alpha > 128] = \
-				np.concatenate([patch_np, patch_alpha[:, :, None]], axis=-1)[patch_alpha > 128]
-			self.np_original_image = new_orig
+			# Update original and replace it here if specified
+			if update_original:
+				new_orig[image_rect.top():image_rect.top() + patch_np.shape[0],
+				image_rect.left():image_rect.left() + patch_np.shape[1], :][patch_alpha > 128] = \
+					np.concatenate([patch_np, patch_alpha[:, :, None]], axis=-1)[patch_alpha > 128]
+				self.np_original_image = new_orig
+			# Update canvas image
 			self.set_np_image(new_image)
 
 	def get_selection_np_image(self):
