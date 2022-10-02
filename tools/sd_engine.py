@@ -4,6 +4,7 @@ from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from diffusers.schedulers import LMSDiscreteScheduler, DDPMScheduler, DDIMScheduler, PNDMScheduler
 from enum import Enum
 from PIL import Image
+from transformers import CLIPConfig
 
 class GeneratorType(Enum):
 	txt2img = 1
@@ -16,6 +17,13 @@ class SchedulerType(Enum):
 	DDIM = 4
 
 class NSFWChecker(StableDiffusionSafetyChecker):
+	_backward_hooks = {}
+	_forward_hooks = {}
+	_forward_pre_hooks = {}
+
+	def __init__(self, config: CLIPConfig):
+		print('Dummy NSFW Checker for Inpainting')
+
 	@torch.no_grad()
 	def forward(self, clip_input, images):
 		return images, [False] * len(images)
@@ -25,7 +33,8 @@ class SDEngine:
 		self.type = type
 		self.scheduler = scheduler
 		self.steps = steps
-		self.checker = NSFWChecker.from_pretrained("safety_checker")
+		cfg = CLIPConfig()
+		self.checker = NSFWChecker(cfg)
 		self.generator = torch.Generator(device='cpu')
 		# Device definition
 		self.device = torch.device(
