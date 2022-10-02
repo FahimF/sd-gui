@@ -57,9 +57,9 @@ class Prompt:
 		try:
 			sql = f'SELECT * FROM "prompts" WHERE id = {id}'
 			cur = self.db.execute(sql)
-			if cur.rowcount == 0:
-				return None
 			row = cur.fetchone()
+			if row is None:
+				return None
 			p = Prompt(self.db)
 			p.load(row)
 			return p
@@ -71,9 +71,9 @@ class Prompt:
 		try:
 			sql = f'SELECT * FROM "prompts" WHERE prompt ="{prompt}"'
 			cur = self.db.execute(sql)
-			if cur.rowcount == 0:
-				return None
 			row = cur.fetchone()
+			if row is None:
+				return None
 			p = Prompt(self.db)
 			p.load(row)
 			return p

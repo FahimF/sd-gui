@@ -39,9 +39,9 @@ class Image:
 				  f'path = "output/{path}"'
 			# print(f'SQL: {sql}')
 			cur = self.db.execute(sql)
-			if cur.rowcount == 0:
-				return None
 			row = cur.fetchone()
+			if row is None:
+				return None
 			return row
 		except Error as error:
 			print(f"Failed to query images sqlite table: {error}")
