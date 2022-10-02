@@ -1,5 +1,6 @@
 import torch
 from diffusers import StableDiffusionPipeline, StableDiffusionInpaintPipeline, StableDiffusionImg2ImgPipeline
+from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from diffusers.schedulers import LMSDiscreteScheduler, DDPMScheduler, DDIMScheduler, PNDMScheduler
 from enum import Enum
 from PIL import Image
@@ -14,11 +15,17 @@ class SchedulerType(Enum):
 	PNDM = 3
 	DDIM = 4
 
+class NSFWChecker(StableDiffusionSafetyChecker):
+	@torch.no_grad()
+	def forward(self, clip_input, images):
+		return images, [False] * len(images)
+
 class SDEngine:
 	def __init__(self, type, scheduler, steps):
 		self.type = type
 		self.scheduler = scheduler
 		self.steps = steps
+		self.checker = NSFWChecker.from_pretrained("safety_checker")
 		self.generator = torch.Generator(device='cpu')
 		# Device definition
 		self.device = torch.device(
@@ -83,8 +90,9 @@ class SDEngine:
 		return img, is_nsfw, seed
 
 	def inpaint(self, prompt, image, mask, width, height, seed, guidance, strength):
-		pipe = StableDiffusionInpaintPipeline.from_pretrained('../stable-diffusion-v1-4').to(self.device)
+		pipe = StableDiffusionInpaintPipeline.from_pretrained('stable-diffusion-v1-4').to(self.device)
 		# Disable NSFW checks - stops giving you black images
+		pipe.safety_checker = self.checker
 		# Prepare image
 		wd, ht = image.size
 		if wd != width or ht != height:
