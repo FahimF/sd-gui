@@ -58,10 +58,12 @@ class EditorTab(BaseTab):
 		# Increase size
 		size_layout = QHBoxLayout()
 		self.b_increase_size = QPushButton('Increase Canvas Size')
+		self.b_increase_size.setToolTip('Increase the size of the drawing canvas for outpainting')
 		self.b_increase_size.clicked.connect(self.increase_size)
 		size_layout.addWidget(self.b_increase_size)
 		# Decrease size
 		self.b_decrease_size = QPushButton('Decrease Canvas Size')
+		self.b_decrease_size.setToolTip('Reduce the size of the drawing canvas')
 		self.b_decrease_size.clicked.connect(self.decrease_size)
 		size_layout.addWidget(self.b_decrease_size)
 		edit_groupbox_layout.addLayout(size_layout)
@@ -71,17 +73,20 @@ class EditorTab(BaseTab):
 		color_label = QLabel('Paint Color')
 		color_layout.addWidget(color_label)
 		self.color_widget  = QPushButton()
+		self.color_widget.setToolTip('Display the color picker to set the drawing color')
 		self.color_widget.setFixedSize(36, 36)
 		self.color_widget.clicked.connect(self.select_color)
-		self.color_widget.setStyleSheet("background-color: %s;" % self.color.name())
+		self.color_widget.setStyleSheet(f'background-color: {self.color.name()};')
 		color_layout.addWidget(self.color_widget)
 		color_layout.addStretch()
 		# Previous colour
-		color_label = QLabel('Previous Color\n(Used for fill exclusion)')
+		color_label = QLabel('Previous Color')
 		color_layout.addWidget(color_label)
 		self.prev_color_widget  = QPushButton()
+		self.prev_color_widget.setToolTip('Previous color - tap to switch current color to this.')
 		self.prev_color_widget.setFixedSize(36, 36)
-		self.prev_color_widget.setStyleSheet("background-color: %s;" % self.prev_color.name())
+		self.prev_color_widget.clicked.connect(self.switch_color)
+		self.prev_color_widget.setStyleSheet(f'background-color: {self.prev_color.name()};')
 		color_layout.addWidget(self.prev_color_widget)
 		edit_groupbox_layout.addLayout(color_layout)
 		# Selection size
@@ -129,24 +134,16 @@ class EditorTab(BaseTab):
 		self.b_draw.setToolTip('Draw mode - draw on canvas by left-clicking and dragging')
 		self.b_draw.clicked.connect(lambda: self.mode_button_clicked(self.b_draw))
 		mode_widgets_layout.addWidget(self.b_draw)
-		# Fill
-		self.b_fill = QPushButton()
-		self.b_fill.setCheckable(True)
-		self.b_fill.setStyleSheet('QPushButton{border: 0px solid;}')
-		self.b_fill.setIcon(QIcon('assets/fill.png'))
-		self.b_fill.setIconSize(QSize(40, 40))
-		self.b_fill.setFixedSize(60, 60)
-		self.b_fill.setToolTip('Fill mode - replace color matching the one under the cursor')
-		self.b_fill.clicked.connect(lambda: self.mode_button_clicked(self.b_fill))
-		mode_widgets_layout.addWidget(self.b_fill)
 		edit_groupbox_layout.addLayout(mode_widgets_layout)
 		# Undo
 		undo_redo_layout = QHBoxLayout()
 		self.b_undo = QPushButton('Undo')
+		self.b_undo.setToolTip('Undo previous drawing actions')
 		self.b_undo.clicked.connect(self.do_undo)
 		undo_redo_layout.addWidget(self.b_undo)
 		# Redo
 		self.b_redo = QPushButton('Redo')
+		self.b_redo.setToolTip('Redo previously undone drawing actions')
 		self.b_redo.clicked.connect(self.do_redo)
 		undo_redo_layout.addWidget(self.b_redo)
 		edit_groupbox_layout.addLayout(undo_redo_layout)
@@ -160,21 +157,35 @@ class EditorTab(BaseTab):
 		inpaint_layout = QHBoxLayout()
 		action_groupbox_layout.addLayout(inpaint_layout)
 		# Label
-		mode_label = QLabel('Inpaint Using')
+		mode_label = QLabel('Target')
 		inpaint_layout.addWidget(mode_label)
 		# Draw
-		self.inpaint_full = QRadioButton()
-		self.inpaint_full.setText('Full Image')
-		self.inpaint_full.toggle()
-		# self.inpaint_full.toggled.connect(self.mode_changed)
-		inpaint_layout.addWidget(self.inpaint_full)
+		self.scope_full = QRadioButton()
+		self.scope_full.setToolTip('Set the scope of actions within this group to be for the full image')
+		self.scope_full.setText('Full Image')
+		inpaint_layout.addWidget(self.scope_full)
 		# Select
-		self.inpaint_selected = QRadioButton()
-		self.inpaint_selected.setText('Selection')
-		inpaint_layout.addWidget(self.inpaint_selected)
-
+		self.scope_selected = QRadioButton()
+		self.scope_selected.setToolTip('Set the scope of actions within this group to be just for the selected area')
+		self.scope_selected.setText('Selection')
+		self.scope_selected.toggle()
+		inpaint_layout.addWidget(self.scope_selected)
+		# Mask actions
+		mask_layout = QHBoxLayout()
+		action_groupbox_layout.addLayout(mask_layout)
+		# Fill White
+		self.b_fill = QPushButton('Fill White')
+		self.b_fill.setToolTip('Fill transparent areas with white to create an inpainted area')
+		self.b_fill.clicked.connect(self.fill_white)
+		mask_layout.addWidget(self.b_fill)
+		# Fill Black
+		self.b_mask = QPushButton('Mask Black')
+		self.b_mask.setToolTip('Fill any color that is not the currently selected color with black to create a masked area')
+		self.b_mask.clicked.connect(self.mask_black)
+		mask_layout.addWidget(self.b_mask)
 		# Inpaint
 		self.b_inpaint = QPushButton('Inpaint')
+		self.b_inpaint.setToolTip('Generate a new image for the selected area or the full window')
 		self.b_inpaint.setStyleSheet(buttonStyle)
 		self.b_inpaint.clicked.connect(self.do_inpaint)
 		action_groupbox_layout.addWidget(self.b_inpaint)
@@ -265,12 +276,14 @@ class EditorTab(BaseTab):
 			# Get inputs
 			prompt = self.prompt_text.toPlainText()
 			# Do we take the full image or the selection?
-			if self.inpaint_full.isChecked():
+			if self.scope_full.isChecked():
 				iarr = self.canvas.np_original_image
 				marr = self.canvas.np_image
 			else:
 				iarr = self.canvas.get_selection_original()
 				marr = self.canvas.get_selection_np_image()
+			# Convert any transparent areas in mask image to white
+
 			# Convert NP arrays to images
 			image = Image.fromarray(np.uint8(iarr)).convert('RGB')
 			mask = Image.fromarray(np.uint8(marr)).convert('RGB')
@@ -283,7 +296,7 @@ class EditorTab(BaseTab):
 			sd = self.get_server('local')
 			# Inpaint
 			image, seed = sd.inpaint(prompt, image, mask, wd, ht, -1 , 7.5, 0.6)
-			if self.inpaint_full.isChecked():
+			if self.scope_full.isChecked():
 				self.load_image(image)
 			else:
 				# Revert image to original
@@ -330,12 +343,19 @@ class EditorTab(BaseTab):
 			# Set previous color
 			if self.color != self.prev_color:
 				self.prev_color = self.color
-				self.prev_color_widget.setStyleSheet("background-color: %s;" % self.prev_color.name())
+				self.prev_color_widget.setStyleSheet(f'background-color: {self.prev_color.name()};')
 			# Pass on selection canvas
 			self.canvas.set_color(color)
 			self.color = color
-			sheet = ('background-color: %s' % color.name()) + ';'
-			self.color_widget.setStyleSheet(sheet)
+			self.color_widget.setStyleSheet(f'background-color: {color.name()};')
+
+	def switch_color(self):
+		curr = self.color
+		self.color = self.prev_color
+		self.canvas.set_color(self.color)
+		self.prev_color = curr
+		self.prev_color_widget.setStyleSheet(f'background-color: {self.prev_color.name()};')
+		self.color_widget.setStyleSheet(f'background-color: {self.color.name()};')
 
 	def mode_button_clicked(self, btn):
 		# If this is the same as the previous, just toggle button back and return
@@ -348,7 +368,6 @@ class EditorTab(BaseTab):
 		# Change mode
 		if btn == self.b_select:
 			self.canvas.set_mode(CanvasMode.select)
-			self.inpaint_selected.setEnabled(True)
 			self.selection_size.setEnabled(True)
 			self.brush_size.setEnabled(False)
 		elif btn == self.b_erase:
@@ -358,9 +377,6 @@ class EditorTab(BaseTab):
 		elif btn == self.b_fill:
 			self.canvas.set_mode(CanvasMode.fill)
 		if btn != self.b_select:
-			if self.inpaint_selected.isChecked():
-				self.inpaint_full.toggle()
-			self.inpaint_selected.setEnabled(False)
 			self.selection_size.setEnabled(False)
 			self.brush_size.setEnabled(True)
 		self.previous_mode = btn
@@ -372,3 +388,15 @@ class EditorTab(BaseTab):
 	def do_redo(self):
 		self.canvas.redo()
 		self.canvas.update()
+
+	def fill_white(self):
+		if self.scope_full:
+			self.canvas.fill_transparent(full_image=True)
+		else:
+			self.canvas.fill_transparent()
+
+	def mask_black(self):
+		if self.scope_full:
+			self.canvas.create_mask(full_image=True)
+		else:
+			self.canvas.create_mask()

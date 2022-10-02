@@ -9,7 +9,6 @@ class CanvasMode(Enum):
 	draw = 1
 	select = 2
 	erase = 3
-	fill = 4
 
 class CanvasWidget(QWidget):
 	SIZE_INCREASE_INCREMENT = 64
@@ -100,17 +99,6 @@ class CanvasWidget(QWidget):
 		self.qt_image = self.qimage_from_array(self.np_image)
 
 	def mousePressEvent(self, e):
-		# Are we in fill mode?
-		if self.canvasMode == CanvasMode.fill:
-			print('Going to fill')
-			# Replace everything except for previous color with current color
-			new_image = self.np_image.copy()
-			ncol = np.append(self.color, 255)
-			new_image[np.where((new_image[:, :, :3] != self.prev_color).all(axis=2))] = ncol
-			self.set_np_image(new_image)
-			self.update()
-			return
-
 		size = self.selection_size if self.canvasMode == CanvasMode.select else self.brush_size
 		top_left = QPoint(int(e.pos().x() - size / 2), int(e.pos().y() - size / 2))
 		r = QRect(top_left, QSize(size, size))
@@ -212,6 +200,35 @@ class CanvasWidget(QWidget):
 			new_image = self.np_image.copy()
 			new_image[image_rect.top():image_rect.bottom(), image_rect.left():image_rect.right(), :] = 0
 			self.set_np_image(new_image, add_to_history=add_to_history)
+
+	def create_mask(self, full_image: bool = False):
+		# Replace everything except for current color with black
+		ncol = np.array([0, 0, 0, 255])
+		if full_image:
+			new_image = self.np_image.copy()
+		else:
+			new_image = self.get_selection_np_image()
+		new_image[np.where((new_image[:, :, :3] != self.color).all(axis=2))] = ncol
+		if full_image:
+			self.set_np_image(new_image)
+		else:
+			self.set_selection_image(new_image)
+		self.update()
+
+	def fill_transparent(self, full_image: bool = False):
+		# Replace all transparent sections with white
+		ncol = np.array([255, 255, 255, 255])
+		transparent = np.array([0, 0, 0, 0])
+		if full_image:
+			new_image = self.np_image.copy()
+		else:
+			new_image = self.get_selection_np_image()
+		new_image[np.where((new_image[:, :, :4] == transparent).all(axis=2))] = ncol
+		if full_image:
+			self.set_np_image(new_image)
+		else:
+			self.set_selection_image(new_image)
+		self.update()
 
 	def set_selection_image(self, patch_image):
 		if self.selection_rectangle is not None:
