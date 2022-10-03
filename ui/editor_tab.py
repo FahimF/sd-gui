@@ -1,14 +1,23 @@
+import cv2
 import numpy as np
 import traceback
+
+import scipy
+import skimage
+from scipy.spatial import cKDTree
+
 from tools.config import Config
 from PIL import Image
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QWidget, QScrollArea, QGroupBox, QPushButton, QHBoxLayout, QLabel, \
 	QFrame, QPlainTextEdit, QFileDialog, QMessageBox, QColorDialog, QRadioButton
+
+from tools.perlin2d import perlin
 from tools.sd_engine import GeneratorType
 from ui.base_tab import BaseTab
 from ui.canvas_widget import CanvasWidget, CanvasMode
+from ui.combobox import ComboBox
 from ui.slider import Slider
 from tools.utils import buttonStyle, textStyle, groupTitleStyle
 
@@ -189,6 +198,17 @@ class EditorTab(BaseTab):
 		self.b_inpaint.setStyleSheet(buttonStyle)
 		self.b_inpaint.clicked.connect(self.do_inpaint)
 		action_groupbox_layout.addWidget(self.b_inpaint)
+		# Picker
+		init_options = ['edge_pad', 'cv2_ns', 'cv2_telea', 'gaussian', 'perlin', 'mean_fill']
+		self.init_opts = ComboBox('Outpaint Initializer', init_options)
+		self.init_opts.setToolTip('The initializer to be used for preparing the outpaint image and mask.')
+		action_groupbox_layout.addWidget(self.init_opts)
+		# Outpaint
+		self.b_outpaint = QPushButton('Outpaint')
+		self.b_outpaint.setToolTip('Generate a new image for the selected area')
+		self.b_outpaint.setStyleSheet(buttonStyle)
+		self.b_outpaint.clicked.connect(self.do_outpaint)
+		action_groupbox_layout.addWidget(self.b_outpaint)
 
 		tools_layout.addStretch()
 		scroll_area.setWidget(tools_widget)
@@ -307,6 +327,59 @@ class EditorTab(BaseTab):
 		finally:
 			self.toggle_actions(True)
 
+	def do_outpaint(self):
+		try:
+			self.toggle_actions(False)
+			# Get inputs
+			prompt = self.prompt_text.toPlainText()
+			# We always take the selection
+			iarr = self.canvas.get_selection_np_image()[:, :, 0:3]
+			marr = self.canvas.get_selection_np_image()[:, :, -1]
+			# Initialize the image and mask
+			init = self.init_opts.value()
+			print(f'Init mode: {init}')
+			if init == 'edge_pad':
+				iarr, marr = self.edge_pad(iarr, marr)
+			elif init == 'cv2_ns':
+				iarr, marr = self.cv2_ns(iarr, marr)
+			elif init == 'cv2_telea':
+				iarr, marr = self.cv2_telea(iarr, marr)
+			elif init == 'gaussian':
+				iarr, marr = self.gaussian_noise(iarr, marr)
+			elif init == 'perlin':
+				iarr, marr = self.perlin_noise(iarr, marr)
+			elif init == 'mean_fill':
+				iarr, marr = self.mean_fill(iarr, marr)
+			# Convert NP arrays to images
+			image = Image.fromarray(iarr)
+			marr = 255 - marr
+			marr = skimage.measure.block_reduce(marr, (8, 8), np.max)
+			marr = marr.repeat(8, axis=0).repeat(8, axis=1)
+			mask = Image.fromarray(marr)
+			wd, ht = image.size
+			# Configure
+			self.cfg.type = GeneratorType.img2img
+			self.cfg.scheduler = 'Default'
+			self.cfg.num_inference_steps = 50
+			# Get SD engine
+			sd = self.get_server('local')
+			# Inpaint
+			image, seed = sd.inpaint(prompt, image, mask, 512, 512, -1 , 7.5, 0.75)
+			# Re-work result
+			out = self.canvas.get_selection_np_image()
+			out[:, :, 0:3] = np.array(image.resize((wd, ht), resample=Image.LANCZOS))
+			out[:, :, -1] = 255
+			out_img = Image.fromarray(out)
+			# Revert image to original
+			# self.canvas.revert_np_image()
+			# Paste in inpainted section
+			self.paste_image(out_img)
+		except:
+			print(traceback.format_exc())
+			QMessageBox.warning(self, 'Failed', 'Running inpainting failed! Check console for details.')
+		finally:
+			self.toggle_actions(True)
+
 	def toggle_actions(self, enabled: bool):
 		self.b_load_image.setEnabled(enabled)
 		self.b_inpaint.setEnabled(enabled)
@@ -398,3 +471,107 @@ class EditorTab(BaseTab):
 			self.canvas.create_mask(full_image=True)
 		else:
 			self.canvas.create_mask()
+
+	def gaussian_noise(self, img, mask):
+		noise = np.random.randn(mask.shape[0], mask.shape[1], 3)
+		noise = (noise + 1) / 2 * 255
+		noise = noise.astype(np.uint8)
+		nmask = mask.copy()
+		nmask[mask > 0] = 1
+		img = nmask[:, :, np.newaxis] * img + (1 - nmask[:, :, np.newaxis]) * noise
+		return img, mask
+
+	def perlin_noise(self, img, mask):
+		lin = np.linspace(0, 5, mask.shape[0], endpoint=False)
+		x, y = np.meshgrid(lin, lin)
+		avg = img.mean(axis=0).mean(axis=0)
+		# noise=[((perlin(x, y)+1)*128+avg[i]).astype(np.uint8) for i in range(3)]
+		noise = [((perlin(x, y) + 1) * 0.5 * 255).astype(np.uint8) for i in range(3)]
+		noise = np.stack(noise, axis=-1)
+		# mask=skimage.measure.block_reduce(mask,(8,8),np.min)
+		# mask=mask.repeat(8, axis=0).repeat(8, axis=1)
+		# mask_image=Image.fromarray(mask)
+		# mask_image=mask_image.filter(ImageFilter.GaussianBlur(radius = 4))
+		# mask=np.array(mask_image)
+		nmask = mask.copy()
+		# nmask=nmask/255.0
+		nmask[mask > 0] = 1
+		img = nmask[:, :, np.newaxis] * img + (1 - nmask[:, :, np.newaxis]) * noise
+		# img=img.astype(np.uint8)
+		return img, mask
+
+	def edge_pad(self, img, mask, mode=1):
+		if mode == 0:
+			nmask = mask.copy()
+			nmask[nmask > 0] = 1
+			res0 = 1 - nmask
+			res1 = nmask
+			p0 = np.stack(res0.nonzero(), axis=0).transpose()
+			p1 = np.stack(res1.nonzero(), axis=0).transpose()
+			min_dists, min_dist_idx = cKDTree(p1).query(p0, 1)
+			loc = p1[min_dist_idx]
+			for (a, b), (c, d) in zip(p0, loc):
+				img[a, b] = img[c, d]
+		elif mode == 1:
+			record = {}
+			kernel = [[1] * 3 for _ in range(3)]
+			nmask = mask.copy()
+			nmask[nmask > 0] = 1
+			res = scipy.signal.convolve2d(
+				nmask, kernel, mode="same", boundary="fill", fillvalue=1
+			)
+			res[nmask < 1] = 0
+			res[res == 9] = 0
+			res[res > 0] = 1
+			ylst, xlst = res.nonzero()
+			queue = [(y, x) for y, x in zip(ylst, xlst)]
+			# bfs here
+			cnt = res.astype(np.float32)
+			acc = img.astype(np.float32)
+			step = 1
+			h = acc.shape[0]
+			w = acc.shape[1]
+			offset = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+			while queue:
+				target = []
+				for y, x in queue:
+					val = acc[y][x]
+					for yo, xo in offset:
+						yn = y + yo
+						xn = x + xo
+						if 0 <= yn < h and 0 <= xn < w and nmask[yn][xn] < 1:
+							if record.get((yn, xn), step) == step:
+								acc[yn][xn] = acc[yn][xn] * cnt[yn][xn] + val
+								cnt[yn][xn] += 1
+								acc[yn][xn] /= cnt[yn][xn]
+								if (yn, xn) not in record:
+									record[(yn, xn)] = step
+									target.append((yn, xn))
+				step += 1
+				queue = target
+			img = acc.astype(np.uint8)
+		else:
+			nmask = mask.copy()
+			ylst, xlst = nmask.nonzero()
+			yt, xt = ylst.min(), xlst.min()
+			yb, xb = ylst.max(), xlst.max()
+			content = img[yt: yb + 1, xt: xb + 1]
+			img = np.pad(
+				content,
+				((yt, mask.shape[0] - yb - 1), (xt, mask.shape[1] - xb - 1), (0, 0)),
+				mode="edge",
+			)
+		return img, mask
+
+	def cv2_ns(self, img, mask):
+		ret = cv2.inpaint(img, 255 - mask, 5, cv2.INPAINT_NS)
+		return ret, mask
+
+	def cv2_telea(self, img, mask):
+		ret = cv2.inpaint(img, 255 - mask, 5, cv2.INPAINT_TELEA)
+		return ret, mask
+
+	def mean_fill(self, img, mask):
+		avg = img.mean(axis=0).mean(axis=0)
+		img[mask < 1] = avg
+		return img, mask

@@ -1,6 +1,5 @@
 import torch
 from diffusers import StableDiffusionPipeline, StableDiffusionInpaintPipeline, StableDiffusionImg2ImgPipeline
-from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from diffusers.schedulers import LMSDiscreteScheduler, DDPMScheduler, DDIMScheduler, PNDMScheduler
 from enum import Enum
 from PIL import Image
@@ -16,25 +15,12 @@ class SchedulerType(Enum):
 	PNDM = 3
 	DDIM = 4
 
-class NSFWChecker(StableDiffusionSafetyChecker):
-	_backward_hooks = {}
-	_forward_hooks = {}
-	_forward_pre_hooks = {}
-
-	def __init__(self, config: CLIPConfig):
-		print('Dummy NSFW Checker for Inpainting')
-
-	@torch.no_grad()
-	def forward(self, clip_input, images):
-		return images, [False] * len(images)
-
 class SDEngine:
 	def __init__(self, type, scheduler, steps):
 		self.type = type
 		self.scheduler = scheduler
 		self.steps = steps
 		cfg = CLIPConfig()
-		self.checker = NSFWChecker(cfg)
 		self.generator = torch.Generator(device='cpu')
 		# Device definition
 		self.device = torch.device(
@@ -99,9 +85,11 @@ class SDEngine:
 		return img, is_nsfw, seed
 
 	def inpaint(self, prompt, image, mask, width, height, seed, guidance, strength):
-		pipe = StableDiffusionInpaintPipeline.from_pretrained('stable-diffusion-v1-4').to(self.device)
+		pipe = StableDiffusionInpaintPipeline(vae=self.pipe.vae, text_encoder=self.pipe.text_encoder, tokenizer=self.pipe.tokenizer,
+			unet=self.pipe.unet, scheduler=self.pipe.scheduler, safety_checker=self.pipe.safety_checker,
+			feature_extractor=self.pipe.feature_extractor).to(self.device)
 		# Disable NSFW checks - stops giving you black images
-		pipe.safety_checker = self.checker
+		pipe.safety_checker = lambda images, **kwargs: (images, False)
 		# Prepare image
 		wd, ht = image.size
 		if wd != width or ht != height:
@@ -120,6 +108,6 @@ class SDEngine:
 		generator = self.generator.manual_seed(seed)
 		# Generate image using inpaint pipeline
 		result = pipe(prompt=prompt, init_image=image, mask_image=mask, strength=strength, num_inference_steps=self.steps,
-			guidance_scale=guidance, generator=generator).images
-		img = result[0]
+			guidance_scale=guidance, generator=generator)
+		img = result["sample"][0]
 		return img, seed
