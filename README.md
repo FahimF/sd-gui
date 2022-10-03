@@ -184,3 +184,13 @@ Once the server is running, you can connect to it from another machine using the
 * ~~You get an error saying: "[Cannot convert a MPS Tensor to float64 dtype as the MPS framework doesn't support float64. Please use float32 instead](https://github.com/huggingface/diffusers/issues/358)" Known issue that has been reported to Hugging Face. Read the issue comments to see [how it can be fixed](https://github.com/huggingface/diffusers/issues/358#issue-1361673427) by modifying the diffusers source code ...~~ (Appears to have been a PyTorch nightly issue.)
 
 * ~~If you try to generate an image using both an image and a text prompt, you'll get a brown image as the result. This used to work previously but is broken in the diffusers 0.3.0 release. [Issue reported](https://github.com/huggingface/diffusers/issues/462).~~ (Appears to have been a PyTorch nightly issue.)
+
+## Credit
+
+* A good portion of the drawing/canvas handling code comes from [UnstableFusion](https://github.com/ahrm/UnstableFusion/).
+
+* Other inspiration for the editor comes from [Piecasso](https://github.com/pythonguis/15-minute-apps/tree/master/paint)
+
+* The outpainting code/implementation comes from [stablediffusion-infinity](https://github.com/lkwq007/stablediffusion-infinity).
+
+  
