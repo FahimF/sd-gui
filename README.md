@@ -8,9 +8,9 @@ The aim of the GUI is to keep things as simple as possible and yet provide as ma
 
 ![01-main](screens/mac-01-main.jpg)
 
-| ![gui(screens/mac-01-main.jpg)](screens/mac-01-main_thumb.jpg) | ![gui(screen/win-01-main.jpg)](screens/win-01-main_thumb.jpg) | ![gui(screen/lin-01-main.jpg)](screens/lin-01-main_thumb.jpg) |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| **macOS**                                                    | **Windows**                                                  | **Linux**                                                    |
+| ![gui(screens/mac-01-main.jpg)](screens/mac-01-main.jpg) | ![gui(screen/win-01-main.jpg)](screens/win-01-main.jpg) | ![gui(screen/lin-01-main.jpg)](screens/lin-01-main.jpg) |
+| -------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| **macOS**                                                | **Windows**                                             | **Linux**                                               |
 
 The GUI has the following functionality:
 
