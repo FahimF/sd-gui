@@ -240,12 +240,10 @@ class GeneratorTab(BaseTab):
 		seed_layout.addWidget(self.seed_text)
 		# Finalize params section
 		tools_layout.addWidget(params_groupbox)
-
 		# Generate image Section
 		run_groupbox = QGroupBox('Generate')
 		run_groupbox.setStyleSheet(groupTitleStyle)
 		run_groupbox_layout = QVBoxLayout(run_groupbox)
-
 		# Server
 		def server_changed(val):
 			if val == 'local':

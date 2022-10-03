@@ -18,3 +18,4 @@ clip-vit-large-patch14
 __pycache__
 config.json
 test
+initial

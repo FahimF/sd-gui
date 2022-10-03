@@ -11,7 +11,7 @@ from PIL import Image
 from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QBrush, QColor, QIcon
 from PyQt5.QtWidgets import QVBoxLayout, QSplitter, QWidget, QScrollArea, QGroupBox, QPushButton, QHBoxLayout, QLabel, \
-	QFrame, QPlainTextEdit, QFileDialog, QMessageBox, QColorDialog, QRadioButton
+	QFrame, QPlainTextEdit, QFileDialog, QMessageBox, QColorDialog, QRadioButton, QLineEdit
 
 from tools.perlin2d import perlin
 from tools.sd_engine import GeneratorType
@@ -157,6 +157,28 @@ class EditorTab(BaseTab):
 		undo_redo_layout.addWidget(self.b_redo)
 		edit_groupbox_layout.addLayout(undo_redo_layout)
 		tools_layout.addWidget(edit_groupbox)
+		# Server section
+		server_groupbox = QGroupBox('Server')
+		server_groupbox.setStyleSheet(groupTitleStyle)
+		server_groupbox_layout = QVBoxLayout(server_groupbox)
+		tools_layout.addWidget(server_groupbox)
+		# Server
+		def server_changed(val):
+			if val == 'local':
+				self.server_address.setDisabled(True)
+			else:
+				self.server_address.setEnabled(True)
+		server_options = ['local', 'remote']
+		self.server_type = ComboBox('Server', server_options, self.cfg.server, on_select=server_changed)
+		self.server_type.setToolTip('Whether to run the image generation locally or connect to a remote server to do so.')
+		server_groupbox_layout.addWidget(self.server_type)
+		self.server_address = QLineEdit()
+		self.server_address.setToolTip('The address and port for the remote server.')
+		self.server_address.setPlaceholderText('server address')
+		if self.server_type.value() == 'local':
+			self.server_address.setDisabled(True)
+		self.server_address.setText(self.cfg.server_address)
+		server_groupbox_layout.addWidget(self.server_address)
 		# Actions section
 		action_groupbox = QGroupBox('Actions')
 		action_groupbox.setStyleSheet(groupTitleStyle)
@@ -303,17 +325,19 @@ class EditorTab(BaseTab):
 				iarr = self.canvas.get_selection_original()
 				marr = self.canvas.get_selection_np_image()
 			# Convert NP arrays to images
-			image = Image.fromarray(np.uint8(iarr)).convert('RGB')
-			mask = Image.fromarray(np.uint8(marr)).convert('RGB')
-			wd, ht = image.size
+			image = Image.fromarray(np.uint8(iarr)).convert('RGB').resize((512, 512), resample=Image.LANCZOS)
+			mask = Image.fromarray(np.uint8(marr)).convert('RGB').resize((512, 512), resample=Image.LANCZOS)
+			ht, wd, _ = iarr.shape
 			# Configure
 			self.cfg.type = GeneratorType.img2img
 			self.cfg.scheduler = 'Default'
 			self.cfg.num_inference_steps = 50
 			# Get SD engine
-			sd = self.get_server('local')
+			sd = self.get_server(self.server_type.value())
 			# Inpaint
-			image, seed = sd.inpaint(prompt, image, mask, wd, ht, -1 , 7.5, 0.6)
+			image, seed = sd.inpaint(prompt, image, mask, -1 , 7.5, 0.75)
+			# Resize image back to original size
+			image = image.resize((wd, ht), resample=Image.LANCZOS)
 			if self.scope_full.isChecked():
 				self.load_image(image)
 			else:
@@ -351,20 +375,20 @@ class EditorTab(BaseTab):
 			elif init == 'mean_fill':
 				iarr, marr = self.mean_fill(iarr, marr)
 			# Convert NP arrays to images
-			image = Image.fromarray(iarr)
+			image = Image.fromarray(iarr).resize((512, 512), resample=Image.LANCZOS)
 			marr = 255 - marr
 			marr = skimage.measure.block_reduce(marr, (8, 8), np.max)
 			marr = marr.repeat(8, axis=0).repeat(8, axis=1)
-			mask = Image.fromarray(marr)
-			wd, ht = image.size
+			mask = Image.fromarray(marr).resize((512, 512), resample=Image.LANCZOS)
+			ht, wd, _ = iarr.shape
 			# Configure
 			self.cfg.type = GeneratorType.img2img
 			self.cfg.scheduler = 'Default'
 			self.cfg.num_inference_steps = 50
 			# Get SD engine
-			sd = self.get_server('local')
+			sd = self.get_server(self.server_type.value())
 			# Inpaint
-			image, seed = sd.inpaint(prompt, image, mask, 512, 512, -1 , 7.5, 0.75)
+			image, seed = sd.inpaint(prompt, image, mask, -1 , 7.5, 0.75)
 			# Re-work result
 			out = self.canvas.get_selection_np_image()
 			out[:, :, 0:3] = np.array(image.resize((wd, ht), resample=Image.LANCZOS))

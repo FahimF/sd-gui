@@ -34,14 +34,12 @@ class SDServer:
 		image = Image.fromarray(np.uint8(arr))
 		return image, is_nsfw, seed
 
-	def inpaint(self, prompt, image, mask, width, height, seed, guidance, strength):
+	def inpaint(self, prompt, image, mask, seed, guidance, strength):
 		request_data = {
 			'scheduler': self.scheduler,
 			'prompt': prompt,
 			'image': np.array(image).tolist(),
 			'mask': np.array(mask).tolist(),
-			'width': width,
-			'height': height,
 			'seed': seed,
 			'guidance': guidance,
 			'strength': strength,
@@ -103,8 +101,6 @@ def run_app():
 		image = Image.fromarray(np.uint8(iarr))
 		marr = np.array(data['mask'])
 		mask = Image.fromarray(np.uint8(marr))
-		width = data['width']
-		height = data['height']
 		seed = data['seed']
 		guidance = data['guidance']
 		strength = data['strength']
@@ -112,7 +108,7 @@ def run_app():
 		# Create SD instance
 		sd = SDEngine(type, scheduler, steps)
 		# Generate image
-		img, seed = sd.inpaint(prompt, image, mask, width, height, seed, guidance, strength)
+		img, seed = sd.inpaint(prompt, image, mask, seed, guidance, strength)
 		return jsonify({
 			'status': 'success',
 			'image': np.array(img).to_list(),

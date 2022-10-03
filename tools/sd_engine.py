@@ -84,20 +84,13 @@ class SDEngine:
 		is_nsfw = result["nsfw_content_detected"]
 		return img, is_nsfw, seed
 
-	def inpaint(self, prompt, image, mask, width, height, seed, guidance, strength):
+	# Passed in images are always expected to be 512 x 512
+	def inpaint(self, prompt, image, mask, seed, guidance, strength):
 		pipe = StableDiffusionInpaintPipeline(vae=self.pipe.vae, text_encoder=self.pipe.text_encoder, tokenizer=self.pipe.tokenizer,
 			unet=self.pipe.unet, scheduler=self.pipe.scheduler, safety_checker=self.pipe.safety_checker,
 			feature_extractor=self.pipe.feature_extractor).to(self.device)
 		# Disable NSFW checks - stops giving you black images
 		pipe.safety_checker = lambda images, **kwargs: (images, False)
-		# Prepare image
-		wd, ht = image.size
-		if wd != width or ht != height:
-			image = image.resize((width, height))
-		# Prepare mask
-		wd, ht = mask.size
-		if wd != width or ht != height:
-			mask = mask.resize((width, height))
 		# Get a new random seed, store it and use it as the generator state
 		if seed == -1:
 			seed = self.generator.seed()
