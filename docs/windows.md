@@ -32,11 +32,11 @@ https://git-scm.com/download/win
 
 ### CUDA Toolkit
 
-If you have an NVIDIA graphics card, you will need the CUDA Toolkit installed in order to use your GPU in your Python code. If you don't have the CUDA Toolkit installed, go here and follow the instructiont to install the CUDA Toolkit:
+If you have an NVIDIA graphics card, you will need the CUDA Toolkit installed in order to use your GPU from your Python code. If you don't have the CUDA Toolkit installed, go here and follow the instructiont to install the CUDA Toolkit:
 
 https://developer.nvidia.com/cuda-downloads
 
-**Note:** The Pytorch version you install has to match your CUDA Toolkit version. Otherwise, the GUI will run on the CPU rather than the GPU and will be much slower. To determine the CUDA Toolkit version, you can run the folllowing command via terminal:
+**Note:** The Pytorch version you install has to match your CUDA Toolkit version. Otherwise, the GUI will run on the CPU rather than the GPU and it will be much slower. To determine the CUDA Toolkit version, you can run the folllowing command via terminal:
 
 ```bash
 nvidia-smi

@@ -21,10 +21,10 @@ class SDEngine:
 		self.scheduler = scheduler
 		self.steps = steps
 		cfg = CLIPConfig()
-		self.generator = torch.Generator(device='cpu')
 		# Device definition
-		self.device = torch.device(
-			"cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+		self.device = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')
+		self.non_mps = 'cuda' if torch.cuda.is_available() else 'cpu'
+		self.generator = torch.Generator(device=self.non_mps)
 		# Set up scheduler based on selection
 		sched = None
 		if self.scheduler == 'LMS':
@@ -73,7 +73,7 @@ class SDEngine:
 		# Update generator with seed
 		generator = self.generator.manual_seed(seed)
 		latent = torch.randn((1, self.pipe.unet.in_channels, height // 8, width // 8),
-			generator=generator, device='cpu').to(self.device)
+			generator=generator, device=self.non_mps).to(self.device)
 		if self.type == GeneratorType.img2img:
 			result = self.pipe(prompt=prompt, init_image=image, strength=strength, num_inference_steps=self.steps,
 				guidance_scale=guidance, generator=generator)
