@@ -1,10 +1,10 @@
 # Stable Diffusion GUI
 
-This repo is my work on getting a functional and feature-rich GUI working for Stable Diffusion. All the development and testing was done on Apple Silicon macs but the code should work under Windows and Linux as well. It has been tested under Windows and Linux, but not extensively — if you find bugs, please do let me know and I'll fix them 🙂
+This repo is my work in getting a functional and feature-rich GUI working for Stable Diffusion on the three major desktop OSes — Windows, macOS, and Linux. All the development and testing was done on Apple Silicon macs, but the code does work on Windows and Linux as well. It has been tested under Windows and Linux, but not extensively — if you find bugs, please do let me know and I'll fix them 🙂
 
 The aim of the GUI is to keep things as simple as possible and yet provide as many features as is necessary to get your work done should you do a lot of image generation using Stable Diffusion. The original aim was to keep the Python package requirements as low (and simple) as possible while providing a GUI that works  on a Mac, Linux, or Windows. However, the package requirements might change as more functionality is added to the GUI.
 
-**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on an Intel Mac too but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image!
+**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on Intel Macs as well but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image if you did the image generation locally! But, you can run the GUI locally and have the image generation happen remotely (on a different machine with a GPU for example) to get much faster image generation.
 
 ![01-main](screens/mac-01-main.jpg)
 
@@ -12,9 +12,9 @@ The aim of the GUI is to keep things as simple as possible and yet provide as ma
 | -------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
 | **macOS**                                                | **Windows**                                             | **Linux**                                               |
 
-The GUI has the following functionality:
+The GUI currently has the following functionality:
 
-* You can generate images via just a text prompt or a text prompt + image (either txt2img or img2img)
+* Generate images via just a text prompt or a text prompt + image (either txt2img or img2img)
 
 * Remember all the prompts you've used in the past and allows you to manage them via a simple interface
 
@@ -30,7 +30,7 @@ The GUI has the following functionality:
 
 * Can generate more than one image at a time and allows you to view all generated images in the GUI
 
-* Saves all generated images and the accompanying prompt info to hard drive
+* Saves all generated images and the accompanying prompt info to local storage.
 
 * Allows you to delete any image and its prompt info from within the GUI itself
 
@@ -104,6 +104,12 @@ Once the server is running, you can connect to it from another machine using the
 
 ![06-connect-server](screens/mac-06-connect-server.jpg)
 
+## Using the GUI
+
+There are tooltips for most UI elements explaining what they do. Just hover your mouse cursor ove a UI element like a button or combobox and a tooltip should appear explaining what that particular item does.
+
+I will add more detailed how-tos for tasks later on once I can find some time 🙂 (Or, if you'd like to contribute, add to the documentation and send me a pull request on GitHub and I'll merge the changes in.)
+
 ## Installation Errors
 
 * If you get a Homebrew error like this: `homebrew-core is a shallow clone` then run the following command in terminal:
@@ -173,7 +179,13 @@ Once the server is running, you can connect to it from another machine using the
 
 ## Known Issues
 
-* The latest Pytorch night (1.13.0.dev20220930) appears to be much slower in generating images on an Apple Silicon machine than the previous Pytorch nightly that I used (1.13.0.dev20220922). I don't know if this is a permanent situation or something that will get fixed in the future. I tried setting up conda to install using the particular nightly version that is faster (at least for me) but conda could not find that particular build — if you have a solution for that, please let me know. If you do want to switch to the faster Pytorch nightly version, the only way I know of is to run the folloiwng command *after* you've completed the installation as detailed above:
+* You might not see all errors on the console due to the in-app logging to console. So if you have a crash and want to see what caused it, comment out the following line in `app.py`. Do note that this will disable in-app console logging:
+
+  ```python
+  sys.stdout = sys.stderr = LogStream(queue)
+  ```
+
+* The latest Pytorch nightly (1.13.0.dev20220930) appears to be much slower in generating images on an Apple Silicon machine than the previous Pytorch nightly that I used (1.13.0.dev20220922). I don't know if this is a permanent situation or something that will get fixed in the future. I tried setting up conda to install using the particular nightly version that is faster (at least for me) but conda could not find that particular build — if you have a solution for that, please let me know. If you do want to switch to the faster Pytorch nightly version, the only way I know of is to run the folloiwng command *after* you've completed the installation as detailed above:
 
   ```bash
   pip install --pre -r requirements.txt -f https://download.pytorch.org/whl/nightly/torch_nightly.html

@@ -106,7 +106,7 @@ class Window(QMainWindow):
 if __name__ == '__main__':
     # Create Queue and redirect system output to this queue
     queue = Queue()
-    # sys.stdout = sys.stderr = LogStream(queue)
+    sys.stdout = sys.stderr = LogStream(queue)
     # Windows specific changes to make it display correctly
     if os.name == 'nt':
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
