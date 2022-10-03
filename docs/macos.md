@@ -70,6 +70,8 @@ There are two different ways you can install. Well, to be accurate, there are ma
 
 There's an installer bash script which will prompt you at the relevant points and do the whole install automatically for you. If you are not familiar with the command-line or conda, this might be the best option for you.
 
+**Caveat:** If you are not familiar with miniconda and/or the terminal, this might be too much trouble at this point since I've discovered a bunch of issues with the script after other people tested it. Sorry 😞 So try the manual install or if you wait a few days, I'll try to get the installer issues fixed and a new one out that will work much better.
+
 Do note though that the installer is not well tested and has very little error handling. If it works, fine. If not, you would still need to figure out why the installer failed or try the manual installation steps in the next section.
 
 To run the automated installer, you'd need to download the code from this repo first. So open the terminal, navigate to the folder where you want to place the code from this repo and run the following command:
