@@ -173,11 +173,13 @@ I will add more detailed how-tos for tasks later on once I can find some time �
 
 ## Known Issues
 
-* You might not see all errors on the console due to the in-app logging to console. So if you have a crash and want to see what caused it, comment out the following line in `app.py`. Do note that this will disable in-app console logging:
+* You will not see any output in the in-app logging to console at the moment. If everything is working correctly and you do want to see loggin in the app,  open the `app.py` file in a text editor and remove the  comment from the following line in `app.py`:
 
   ```python
   sys.stdout = sys.stderr = LogStream(queue)
   ```
+
+  If you do have a crash later, this will disable full crash logging in the console. So if that happens, go back and comment out the line above again and run the code again to get the full crash details so that you can report the crash to me 🙂
 
 * The latest Pytorch nightly (1.13.0.dev20220930) appears to be much slower in generating images on an Apple Silicon machine than the previous Pytorch nightly that I used (1.13.0.dev20220922). I don't know if this is a permanent situation or something that will get fixed in the future. I tried setting up conda to install using the particular nightly version that is faster (at least for me) but conda could not find that particular build — if you have a solution for that, please let me know. If you do want to switch to the faster Pytorch nightly version, the only way I know of is to run the folloiwng command *after* you've completed the installation as detailed above:
 

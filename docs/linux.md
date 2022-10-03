@@ -12,7 +12,7 @@ conda activate ml
 conda install torch -c pytorch-nightly
 conda install pyqt
 conda install -c conda-forge transformers diffusers ftfy flask scipy
-pip install opencv-python
+pip install opencv-python scikit-image
 
 # Clone this repo and create output folder
 git clone https://github.com/FahimF/sd-gui.git

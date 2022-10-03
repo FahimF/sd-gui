@@ -8,12 +8,6 @@ You might not need all of the following pre-requisites, but it might be helpful 
 
 Also do note that you might have these already installed. If so, then you don't have to do anything. The following instructions in this section are for people who have pristine systems which do not have the pre-requisites installed.
 
-### CUDA Toolkit
-
-If you have an NVIDIA graphics card, you will need the CUDA Toolkit installed in order to use your GPU in your Python code. If you don't have the CUDA Toolkit installed, go here and follow the instructiont to install the CUDA Toolkit:
-
-https://developer.nvidia.com/cuda-downloads
-
 ### miniconda
 
 [Miniconda](https://docs.conda.io/en/latest/miniconda.html) is an installer/package manager for Python. It allows you to have multiple environments for different Python apps/tasks and to be able to mix and match different Python versions as required.
@@ -36,6 +30,22 @@ You can download the installer for Git from here:
 
 https://git-scm.com/download/win
 
+### CUDA Toolkit
+
+If you have an NVIDIA graphics card, you will need the CUDA Toolkit installed in order to use your GPU in your Python code. If you don't have the CUDA Toolkit installed, go here and follow the instructiont to install the CUDA Toolkit:
+
+https://developer.nvidia.com/cuda-downloads
+
+**Note:** The Pytorch version you install has to match your CUDA Toolkit version. Otherwise, the GUI will run on the CPU rather than the GPU and will be much slower. To determine the CUDA Toolkit version, you can run the folllowing command via terminal:
+
+```bash
+nvidia-smi
+```
+
+The number along with "CUDA Version:" in the top right of the output you get is your CUDA Toolkit version. While the instructions below tell you how to install Pytorch, your easiest bet to get things right (to match your CUDA Toolkit version) would be to go here and find the exact command you need by selecting your CUDA Tookit version under "Compute Platform" to get the right command:
+
+https://pytorch.org/get-started/locally/
+
 That's it! You should now be set for installing and running the code from this repo 🙂
 
 ## Installation
@@ -52,9 +62,10 @@ conda activate ml
 
 # Install the needed Python packages
 conda install pyqt
-conda install torch -c pytorch-nightly
+# The following command is for CUDA Toolkit 11.7. Go to https://pytorch.org/get-started/locally/ and find the correct commadn matching your CUDA Toolkit version
+conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch-nightly -c nvidia
 conda install -c conda-forge transformers diffusers ftfy flask scipy
-pip install opencv-python
+pip install opencv-python scikit-image
 
 # Clone this repo and create output folder
 git clone https://github.com/FahimF/sd-gui.git
