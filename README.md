@@ -128,12 +128,7 @@ I will add more detailed how-tos for tasks later on once I can find some time ðŸ
   conda env create -f environment.yaml
   ```
 
-* I didn't need to install tkinter on my machine but if you do get an error about missing `_tkinter` install it via the terminal as follows:
-
-  ```bash
-  brew install python-tk
-  ```
-
+  
 * If you get the following error:
 
   ```
