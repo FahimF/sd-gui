@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 import traceback
 
-import scipy
 import skimage
 from scipy.spatial import cKDTree
+from scipy.signal import convolve2d
 
 from tools.config import Config
 from PIL import Image
@@ -541,7 +541,7 @@ class EditorTab(BaseTab):
 			kernel = [[1] * 3 for _ in range(3)]
 			nmask = mask.copy()
 			nmask[nmask > 0] = 1
-			res = scipy.signal.convolve2d(
+			res = convolve2d(
 				nmask, kernel, mode="same", boundary="fill", fillvalue=1
 			)
 			res[nmask < 1] = 0
