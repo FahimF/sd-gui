@@ -4,7 +4,7 @@ This repo is my work in getting a functional and feature-rich GUI working for St
 
 The aim of the GUI is to keep things as simple as possible and yet provide as many features as is necessary to get your work done should you do a lot of image generation using Stable Diffusion. The original aim was to keep the Python package requirements as low (and simple) as possible while providing a GUI that works  on a Mac, Linux, or Windows. However, the package requirements might change as more functionality is added to the GUI.
 
-**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on Intel Macs as well but look at the Installation Errors section below below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image if you did the image generation locally! But, you can run the GUI locally and have the image generation happen remotely (on a different machine with a GPU for example) to get much faster image generation.
+**Note:** All development has been done on an Apple Silicon Mac and this has been optimized for Apple Silicon. It does work on Intel Macs as well but look at the [Installation Errors](#installation-errors) section below for help if things go wrong with the installation. Also, on a 2017 MacBook Pro, it took about 40 minutes to generate a single image if you did the image generation locally! But, you can run the GUI locally and have the image generation happen remotely (on a different machine with a GPU, for example) to get much faster image generation.
 
 ![01-main](screens/mac-01-main.jpg)
 
@@ -128,7 +128,6 @@ I will add more detailed how-tos for tasks later on once I can find some time ðŸ
   conda env create -f environment.yaml
   ```
 
-  
 * If you get the following error:
 
   ```
