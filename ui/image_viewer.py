@@ -1,12 +1,16 @@
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, QModelIndex
 from PyQt5.QtGui import QPixmap, QBrush, QColor
-from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QFrame, QGraphicsPixmapItem, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QGraphicsView, QGraphicsScene, QFrame, QGraphicsPixmapItem, QVBoxLayout, \
+	QFileSystemModel, QMessageBox
 
 class ImageViewer(QWidget):
-	def __init__(self, file:str):
-		print(f'Creating Image viewer for: {file}')
+	def __init__(self, files: QFileSystemModel, index: int):
+		self.files = files
+		self.index = index
 		super(ImageViewer, self).__init__()
-		image = QPixmap(file)
+		file = self.files.data(index, Qt.DisplayRole)
+		fn = f'output/{file}'
+		image = QPixmap(fn)
 		size = image.size()
 		self.resize(size.width(), size.height())
 		# Viewer
@@ -29,6 +33,34 @@ class ImageViewer(QWidget):
 		main_layout = QVBoxLayout(self)
 		main_layout.addWidget(self.view)
 
+	def prev_image(self):
+		# The columns never change and only the row changes?
+		row = self.index.row() - 1
+		col = self.index.column()
+		if self.index.sibling(row, col) == QModelIndex():
+			# No such item?
+			QMessageBox.warning(self, 'No more images', 'There are no more images to display')
+		else:
+			self.index = self.index.sibling(row, col)
+			self.show_image()
+
+	def next_image(self):
+		# The columns never change and only the row changes?
+		row = self.index.row() + 1
+		col = self.index.column()
+		if self.index.sibling(row, col) == QModelIndex():
+			# No such item?
+			QMessageBox.warning(self, 'No more images', 'There are no more images to display')
+		else:
+			self.index = self.index.sibling(row, col)
+			self.show_image()
+
+	def show_image(self):
+		file = self.files.data(self.index, Qt.DisplayRole)
+		fn = f'output/{file}'
+		image = QPixmap(fn)
+		self._photo.setPixmap(image)
+
 	def fitInView(self, scale=True):
 		rect = QRectF(self._photo.pixmap().rect())
 		if not rect.isNull():
@@ -40,6 +72,15 @@ class ImageViewer(QWidget):
 			factor = min(viewrect.width() / scenerect.width(), viewrect.height() / scenerect.height())
 			self.view.scale(factor, factor)
 			self._zoom = 0
+
+	def mousePressEvent(self, event):
+		pos = event.pos()
+		if pos.x() <= int(self.size().width() * 0.5):
+			# Left half
+			self.prev_image()
+		else:
+			# Right half
+			self.next_image()
 
 	def wheelEvent(self, event):
 		if event.angleDelta().y() > 0:

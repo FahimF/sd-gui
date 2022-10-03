@@ -123,9 +123,7 @@ class GalleryTab(BaseTab):
 		act_layout.addStretch()
 
 	def show_item(self, index):
-		file = self.files.data(index, Qt.DisplayRole)
-		fn = f'output/{file}'
-		self.viewer = ImageViewer(file=fn)
+		self.viewer = ImageViewer(self.files, index)
 		self.viewer.show()
 
 	def delete_selection(self):
