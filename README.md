@@ -193,6 +193,17 @@ I will add more detailed how-tos for tasks later on once I can find some time �
 
 * ~~If you try to generate an image using both an image and a text prompt, you'll get a brown image as the result. This used to work previously but is broken in the diffusers 0.3.0 release. [Issue reported](https://github.com/huggingface/diffusers/issues/462).~~ (Appears to have been a PyTorch nightly issue.)
 
+## FAQ (Frequently Asked Questions)
+
+* **Does this support model 'x'?** No, the base package does not support any other models besides the [Hugging Face diffusers Stable Diffusion model](https://huggingface.co/CompVis/stable-diffusion-v1-4).
+* **Why does this use a different Stable Diffusion model than distribution 'x'?** Because my code uses the [Hugging Face diffusers](https://github.com/huggingface/diffusers) code to implement Stable Diffusion and others probably used the [CompVis codebase](https://github.com/CompVis/stable-diffusion).
+* **I get a "ModuleNotFoundError: No module named 'x'" error. What do I do?** This generally means that a required Python package is not installed in your current conda environment. If you Google the error with the module name, it should generally show you a search result which tells you how to install the missing package. This generally involves running the command "pip install" with a package name after that.
+* **Why is this slower than distribution 'x'?** This could be due to multiple reasons: 1) you have a mix of Python packages which have issues and the same issues are not there with the other distribution 2) the other distribution is inherently faster than this one 3) you are running on CPU instead of GPU for this distribution due to some issue.
+* **Why is it so hard to get things working?** The GUI code depends on various Python packages. Some of these Python packages have dependencies where they require a specific version of another package. Getting all of these to work together is generally tricky. It's a matter of keeping on trying till you find the right combination of stuff, figure out all the errors, and get everything to install correctly. Or you can just give up 😛
+* **Does this only work on NVIDIA GPUs or Apple M1 machines?** No, the code should run on any device running Windows, macOS, or Linux, whether there's an NVIDIA GPU or not, or whether it's a mac with Apple Silicon or Intel CPU. But the speed at which images will be generated will vary depending on whetther you are on Apple Silicon vs Intel or have a supported GPU vs. no supported GPU.
+* **Do you have any benchmarks for how fast this will run on hardware 'x'?** I don't have benchmarks for specific hardware, sorry. I can tell you that I generally get about 1.3it/s on an M1 Max MBP with 32GB of RAM and that others have reported 32s/it on a 2017 Intel MBP, 4s/it on an i9 Intel MBP etc. None of these are averages over multiple iterations — just single-run observations.
+* **How can I use the remote server feature with distribution 'x'?** Currently, the remote server feature works with the server from my own codebase. Basically, you run the server part on one machine (which might have a fast GPU) and use the GUI from another machine which might be slower. I am looking into supporting other distributions but can't make any promises just yet.
+
 ## Credit
 
 * A good portion of the drawing/canvas handling code comes from [UnstableFusion](https://github.com/ahrm/UnstableFusion/).
