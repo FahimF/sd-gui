@@ -10,7 +10,7 @@ from ui.base_tab import BaseTab, SDWorker
 from ui.combobox import ComboBox
 from ui.expander import Expander
 from ui.slider import Slider
-from tools.utils import buttonStyle, groupTitleStyle, textStyle
+from tools.utils import buttonStyle, groupTitleStyle
 from PIL import Image
 from tools.sd_engine import  GeneratorType
 
@@ -53,7 +53,6 @@ class GeneratorTab(BaseTab):
 		elif len(self.cfg.string_prompts()) > 0:
 			self.prompt_text.setPlainText(self.cfg.string_prompts()[0])
 		self.prompt_text.setFixedHeight(60)
-		self.prompt_text.setStyleSheet(textStyle)
 		palette = self.prompt_text.palette()
 		palette.setBrush(palette.Window, QBrush(Qt.transparent))
 		self.prompt_text.setPalette(palette)

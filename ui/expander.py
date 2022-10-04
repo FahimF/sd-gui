@@ -1,3 +1,4 @@
+import darkdetect
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QToolButton, QScrollArea, QSizePolicy, QFrame
 from PyQt5.uic.properties import QtCore
@@ -13,7 +14,10 @@ class Expander(QWidget):
 		main_layout.setContentsMargins(0, 0, 0, 0)
 		# Toggle button
 		self.toggle_button = QToolButton(text=title, checkable=True, checked=False)
-		self.toggle_button.setStyleSheet("QToolButton { border: none; }")
+		if darkdetect.isDark():
+			self.toggle_button.setStyleSheet("QToolButton { border: none; color: white;}")
+		else:
+			self.toggle_button.setStyleSheet("QToolButton { border: none; color: black;}")
 		self.toggle_button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 		self.toggle_button.setArrowType(Qt.RightArrow)
 		self.toggle_button.setChecked(self.is_expanded)

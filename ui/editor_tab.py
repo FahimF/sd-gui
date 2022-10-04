@@ -19,7 +19,7 @@ from ui.base_tab import BaseTab
 from ui.canvas_widget import CanvasWidget, CanvasMode
 from ui.combobox import ComboBox
 from ui.slider import Slider
-from tools.utils import buttonStyle, textStyle, groupTitleStyle
+from tools.utils import buttonStyle, groupTitleStyle
 
 class EditorTab(BaseTab):
 	def __init__(self, cfg: Config):
@@ -115,7 +115,7 @@ class EditorTab(BaseTab):
 		self.b_select = QPushButton()
 		self.b_select.setCheckable(True)
 		self.b_select.toggle()
-		self.b_select.setStyleSheet('QPushButton{border: 0px solid; background-color : lightblue}')
+		self.b_select.setStyleSheet(f'border: 0px solid; background-color : lightblue;')
 		self.b_select.setIcon(QIcon('assets/select.png'))
 		self.b_select.setIconSize(QSize(40, 40))
 		self.b_select.setFixedSize(60, 60)
@@ -126,7 +126,7 @@ class EditorTab(BaseTab):
 		# Erase
 		self.b_erase = QPushButton()
 		self.b_erase.setCheckable(True)
-		self.b_erase.setStyleSheet('QPushButton{border: 0px solid;}')
+		self.b_erase.setStyleSheet(f'border: 0px solid;')
 		self.b_erase.setIcon(QIcon('assets/erase.png'))
 		self.b_erase.setIconSize(QSize(40, 40))
 		self.b_erase.setFixedSize(60, 60)
@@ -136,7 +136,7 @@ class EditorTab(BaseTab):
 		# Paint
 		self.b_draw = QPushButton()
 		self.b_draw.setCheckable(True)
-		self.b_draw.setStyleSheet('QPushButton{border: 0px solid;}')
+		self.b_draw.setStyleSheet(f'border: 0px solid;')
 		self.b_draw.setIcon(QIcon('assets/draw.png'))
 		self.b_draw.setIconSize(QSize(40, 40))
 		self.b_draw.setFixedSize(60, 60)
@@ -250,7 +250,6 @@ class EditorTab(BaseTab):
 		self.prompt_text.setToolTip('Enter the prompt text for the area you want to inpaint')
 		self.prompt_text.setPlaceholderText('Prompt')
 		self.prompt_text.setFixedHeight(60)
-		self.prompt_text.setStyleSheet(textStyle)
 		palette = self.prompt_text.palette()
 		palette.setBrush(palette.Window, QBrush(Qt.transparent))
 		self.prompt_text.setPalette(palette)
@@ -458,8 +457,8 @@ class EditorTab(BaseTab):
 			btn.toggle()
 			return
 		self.previous_mode.toggle()
-		self.previous_mode.setStyleSheet('QPushButton{border: 0px solid; background-color : transparent}')
-		btn.setStyleSheet('QPushButton{border: 0px solid; background-color : lightblue}')
+		self.previous_mode.setStyleSheet(f'border: 0px solid; background-color : transparent;')
+		btn.setStyleSheet(f'border: 0px solid; background-color : lightblue;')
 		# Change mode
 		if btn == self.b_select:
 			self.canvas.set_mode(CanvasMode.select)

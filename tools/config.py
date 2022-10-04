@@ -1,4 +1,5 @@
 import json
+import os.path
 import sqlite3
 from data.category import Category
 from data.modifier import Modifier
@@ -33,6 +34,13 @@ class Config:
 			self.db_migrate()
 		except Error as e:
 			print(f'Error opening DB - Code: {e.sqlite_errorcode}, Name: {e.sqlite_errorname}')
+		# Check for output folder
+		if os.path.isdir('output'):
+			print('Output folder exists')
+		else:
+			# Create folder
+			print('Created output folder')
+			os.mkdir('output')
 		# Load saved config data
 		if exists('config.json'):
 			with open('config.json') as file:

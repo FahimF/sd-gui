@@ -32,5 +32,6 @@ if [[ $input = n ]] ; then
 	printf "\nQuitting ...\n"
 	exit
 fi
+mkdir output
 git lfs install
 git clone https://huggingface.co/CompVis/stable-diffusion-v1-4

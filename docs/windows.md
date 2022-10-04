@@ -65,7 +65,7 @@ conda install pyqt
 # The following command is for CUDA Toolkit 11.7. Go to https://pytorch.org/get-started/locally/ and find the correct commadn matching your CUDA Toolkit version
 conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch-nightly -c nvidia
 conda install -c conda-forge transformers diffusers ftfy flask scipy
-pip install opencv-python scikit-image
+pip install opencv-python scikit-image darkdetect
 
 # Clone this repo and create output folder
 git clone https://github.com/FahimF/sd-gui.git
