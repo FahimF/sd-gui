@@ -30,19 +30,42 @@ You will need Homebre in order to install git and git-lfs, which you'll need fur
 
 [Miniconda](https://docs.conda.io/en/latest/miniconda.html) is an installer/package manager for Python. It allows you to have multiple environments for different Python apps/tasks and to be able to mix and match different Python versions as required.
 
-You can install Miniconda by running the following command from the terminal:
+To install Miniconda, you need the wget command, which you can install using Homebrew (which you should have installed above) by runing the following command in terminal:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh)"
+brew install wget
 ```
 
-**Note:** The above command is for Apple Silicon (arm64). If you want to install Miniconda on an Intel, mac, then use the following command:
+Next, you download the Miniconda installer using wget via the terminal:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)"
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -O miniconda.sh
 ```
 
-**Note:** The above command sometimes fails or tries to download the Windows version of the installer for some reason. If that happens to you, please go to the Miniconda site and follow their detailed installation doc here:
+**Note:** The above command is for Apple Silicon (arm64). If you want to install Miniconda on an Intel mac, then use the following command:
+
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+```
+
+Finally, you install Miniconda by running the following two commands from the terminal:
+
+```bash
+chmod +x miniconda.sh
+./miniconda.sh
+```
+
+Once the above process completes, you will need to quit your terminal session and restart the terminal before the conda command is available to you. So don't forget to exit the terminal and to restart it again before continuing on.
+
+After you restar the terminal, you can verify if conda is properly install by running the following command in the terminal:
+
+```bash
+conda
+```
+
+If you get a "command not found" error, then you do not have conda installed properly. But if you get output from conda (generally the conda help), then you are all set to move on to the next step 🙂
+
+**Note:** If the above process fails or you run into issues, please go to the Miniconda site and follow their detailed installation doc here:
 
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/macos.html
 
