@@ -57,6 +57,7 @@ class SDEngine:
 					self.device)
 		# Disable NSFW checks - stops giving you black images
 		self.pipe.safety_checker = lambda images, **kwargs: (images, False)
+		self.pipe.enable_attention_slicing()
 
 	def generate(self, prompt: str, width, height, seed, guidance, image:Image=None, strength=0):
 		# Load and prepare image if type is img2img
@@ -80,9 +81,9 @@ class SDEngine:
 		else:
 			result = self.pipe(prompt=prompt, num_inference_steps=self.steps, width=width, height=height,
 				guidance_scale=guidance, latents=latent)
-		img = result["sample"][0]
+		image = result.images[0]
 		is_nsfw = result["nsfw_content_detected"]
-		return img, is_nsfw, seed
+		return image, is_nsfw, seed
 
 	# Passed in images are always expected to be 512 x 512
 	def inpaint(self, prompt, image, mask, seed, guidance, strength):
@@ -102,5 +103,5 @@ class SDEngine:
 		# Generate image using inpaint pipeline
 		result = pipe(prompt=prompt, init_image=image, mask_image=mask, strength=strength, num_inference_steps=self.steps,
 			guidance_scale=guidance, generator=generator)
-		img = result["sample"][0]
+		img = result.images[0]
 		return img, seed
